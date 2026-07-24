@@ -1,4 +1,4 @@
-# FRIDAY OS v0.3
+# FRIDAY OS v0.4
 
 A responsive JARVIS-inspired command dashboard for Home Assistant.
 
@@ -11,6 +11,9 @@ A responsive JARVIS-inspired command dashboard for Home Assistant.
 - Garage, exterior door, chicken coop, and unavailable-device status
 - Responsive desktop, tablet, and mobile HUD
 - Recovery-aware daily recommendation
+- Browser-based entity mapping for garage, exterior doors, and coop
+- Confirmed garage and coop cover controls
+- Default link address set to `http://homeassistant.local:8123`
 
 ## Install on Home Assistant Green
 
@@ -41,8 +44,8 @@ FRIDAY automatically checks these entity IDs:
 - `sensor.whoop_resting_hr`
 - `sensor.whoop_day_strain`
 
-Fallback entity IDs without the `whoop_` prefix are also supported.
+Fallback entity IDs without the `whoop_` prefix are also supported. Property entities can be selected under **Configure Link** after the first successful connection.
 
 ## Version
 
-v0.3 — live data foundation
+v0.4 — entity mapping and property controls
