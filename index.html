@@ -72,16 +72,27 @@
             <span>PROPERTY STATUS</span><span>04</span>
           </div>
           <div class="home-grid">
-            <div class="home-state"><span>GARAGE</span><strong id="garage">UNKNOWN</strong></div>
-            <div class="home-state"><span>EXTERIOR</span><strong id="doors">SCANNING</strong></div>
-            <div class="home-state"><span>COOP</span><strong id="coop">SCANNING</strong></div>
+            <div class="home-state control-state">
+              <span>GARAGE</span><strong id="garage">UNKNOWN</strong>
+              <small id="garage-detail">No entity linked</small>
+              <button id="garage-action" class="mini-button" type="button" disabled>OPEN</button>
+            </div>
+            <div class="home-state">
+              <span>EXTERIOR</span><strong id="doors">SCANNING</strong>
+              <small id="doors-detail">No sensors linked</small>
+            </div>
+            <div class="home-state control-state">
+              <span>COOP</span><strong id="coop">SCANNING</strong>
+              <small id="coop-detail">No entity linked</small>
+              <button id="coop-action" class="mini-button" type="button" disabled>OPEN</button>
+            </div>
             <div class="home-state"><span>SYSTEMS</span><strong id="systems">OFFLINE</strong></div>
           </div>
         </article>
       </section>
 
       <footer>
-        <span>FRIDAY OS <b>v0.3</b></span>
+        <span>FRIDAY OS <b>v0.4</b></span>
         <span id="entity-count">0 ENTITIES LINKED</span>
       </footer>
     </main>
@@ -89,13 +100,29 @@
     <dialog id="setup">
       <form id="setup-form" method="dialog">
         <div class="panel-heading"><span>HOME ASSISTANT LINK</span><span>AUTH</span></div>
-        <p>Enter your Home Assistant address and a Long-Lived Access Token. The token stays in this browser.</p>
+        <p>Enter your Home Assistant address and token, then map the property entities you want FRIDAY to monitor. These settings stay in this browser.</p>
         <label>HOME ASSISTANT URL
           <input id="ha-url" type="url" placeholder="http://homeassistant.local:8123" required>
         </label>
         <label>LONG-LIVED ACCESS TOKEN
           <textarea id="ha-token" rows="4" required></textarea>
         </label>
+        <fieldset>
+          <legend>PROPERTY ENTITY MAPPING</legend>
+          <label>GARAGE COVER
+            <input id="map-garage" list="property-entities" placeholder="cover.garage_door">
+          </label>
+          <label>FRONT DOOR SENSOR
+            <input id="map-frontDoor" list="property-entities" placeholder="binary_sensor.front_door">
+          </label>
+          <label>BACK DOOR SENSOR
+            <input id="map-backDoor" list="property-entities" placeholder="binary_sensor.back_door">
+          </label>
+          <label>COOP DOOR
+            <input id="map-coopDoor" list="property-entities" placeholder="cover.chicken_coop_door">
+          </label>
+          <datalist id="property-entities" class="entity-options"></datalist>
+        </fieldset>
         <div class="dialog-actions">
           <button id="cancel" class="text-button" type="button">CANCEL</button>
           <button class="primary-button" type="submit">CONNECT</button>
