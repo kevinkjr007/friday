@@ -6,18 +6,13 @@ const saved = {
   url: localStorage.getItem('friday.haUrl') || 'http://homeassistant.local:8123',
   token: localStorage.getItem('friday.haToken') || ''
 };
-const mappingKeys = ['garage', 'frontDoor', 'backDoor', 'coopDoor'];
+const mappingKeys = [
+  'recovery', 'sleep', 'hrv', 'rhr', 'strain',
+  'garage', 'frontDoor', 'backDoor', 'coopDoor'
+];
 const mappings = Object.fromEntries(
   mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || ''])
 );
-
-const entityAliases = {
-  recovery: ['sensor.whoop_recovery_score', 'sensor.recovery_score'],
-  sleep: ['sensor.whoop_sleep_performance', 'sensor.sleep_performance'],
-  hrv: ['sensor.whoop_hrv', 'sensor.hrv'],
-  rhr: ['sensor.whoop_resting_hr', 'sensor.resting_heart_rate'],
-  strain: ['sensor.whoop_day_strain', 'sensor.day_strain']
-};
 
 function tick() {
   const now = new Date();
@@ -31,22 +26,13 @@ function tick() {
 }
 
 function numberState(key) {
-  const ids = entityAliases[key];
-  const state = ids.map((id) => entities.get(id)).find(Boolean);
+  const state = entities.get(mappings[key]);
   const value = Number.parseFloat(state?.state);
   return Number.isFinite(value) ? value : null;
 }
 
-function findEntities(pattern, domains = []) {
-  return [...entities.values()].filter((entity) => {
-    const [domain] = entity.entity_id.split('.');
-    const text = `${entity.entity_id} ${entity.attributes?.friendly_name || ''}`.toLowerCase();
-    return (!domains.length || domains.includes(domain)) && pattern.test(text);
-  });
-}
-
-function mappedEntity(key, fallbackPattern, domains = []) {
-  return entities.get(mappings[key]) || findEntities(fallbackPattern, domains)[0] || null;
+function mappedEntity(key) {
+  return entities.get(mappings[key]) || null;
 }
 
 function isOpen(entity) {
@@ -82,23 +68,19 @@ function render() {
     ? 'AWAITING BIOMETRICS'
     : recovery >= 67 ? 'READY FOR HIGH OUTPUT' : recovery >= 34 ? 'MODERATE CAPACITY' : 'RECOVERY PRIORITY';
 
-  const garage = mappedEntity('garage', /garage/, ['cover']);
-  $('garage').textContent = garage ? garage.state.toUpperCase() : 'NOT FOUND';
+  const garage = mappedEntity('garage');
+  $('garage').textContent = garage ? garage.state.toUpperCase() : 'NOT CONFIGURED';
   $('garage-detail').textContent = entityLabel(garage);
   $('garage-action').disabled = !garage;
   $('garage-action').textContent = isOpen(garage) ? 'CLOSE' : 'OPEN';
 
-  const mappedDoors = ['frontDoor', 'backDoor'].map((key) => entities.get(mappings[key])).filter(Boolean);
-  const exterior = mappedDoors.length
-    ? mappedDoors
-    : findEntities(/(front|back|side|exterior).*(door)|door.*(front|back|side|exterior)/, ['binary_sensor']);
+  const exterior = ['frontDoor', 'backDoor'].map((key) => entities.get(mappings[key])).filter(Boolean);
   const openDoors = exterior.filter((entity) => entity.state === 'on');
-  $('doors').textContent = exterior.length ? (openDoors.length ? `${openDoors.length} OPEN` : 'SECURE') : 'NOT FOUND';
+  $('doors').textContent = exterior.length ? (openDoors.length ? `${openDoors.length} OPEN` : 'SECURE') : 'NOT CONFIGURED';
   $('doors-detail').textContent = exterior.length ? `${exterior.length} monitored` : 'No door sensors mapped';
 
-  const coop = findEntities(/(chicken|coop)/);
-  const coopDoor = mappedEntity('coopDoor', /(chicken|coop)/, ['cover', 'binary_sensor']);
-  $('coop').textContent = coopDoor ? coopDoor.state.toUpperCase() : (coop.length ? 'ONLINE' : 'NOT FOUND');
+  const coopDoor = mappedEntity('coopDoor');
+  $('coop').textContent = coopDoor ? coopDoor.state.toUpperCase() : 'NOT CONFIGURED';
   $('coop-detail').textContent = entityLabel(coopDoor);
   $('coop-action').disabled = !coopDoor || !coopDoor.entity_id.startsWith('cover.');
   $('coop-action').textContent = isOpen(coopDoor) ? 'CLOSE' : 'OPEN';
@@ -120,26 +102,27 @@ function render() {
 }
 
 function populateEntityLists() {
-  const candidates = [...entities.values()]
+  const propertyCandidates = [...entities.values()]
     .filter((entity) => ['cover', 'binary_sensor'].includes(entity.entity_id.split('.')[0]))
     .sort((a, b) => entityLabel(a).localeCompare(entityLabel(b)));
+  const sensorCandidates = [...entities.values()]
+    .filter((entity) => entity.entity_id.startsWith('sensor.'))
+    .sort((a, b) => entityLabel(a).localeCompare(entityLabel(b)));
 
-  document.querySelectorAll('datalist.entity-options').forEach((list) => {
+  const fillList = (list, candidates) => {
     list.replaceChildren(...candidates.map((entity) => {
       const option = document.createElement('option');
       option.value = entity.entity_id;
       option.label = entityLabel(entity);
       return option;
     }));
-  });
+  };
+  fillList($('property-entities'), propertyCandidates);
+  fillList($('sensor-entities'), sensorCandidates);
 }
 
 async function operateCover(key) {
-  const entity = entities.get(mappings[key]) || (
-    key === 'garage'
-      ? mappedEntity('garage', /garage/, ['cover'])
-      : mappedEntity('coopDoor', /(chicken|coop)/, ['cover'])
-  );
+  const entity = entities.get(mappings[key]);
   if (!entity?.entity_id.startsWith('cover.')) return;
 
   const label = entityLabel(entity);
