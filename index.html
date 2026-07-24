@@ -1,9 +1,108 @@
 <!doctype html>
-<html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="theme.css">
-<title>FRIDAY v0.2</title></head>
-<body>
-<canvas id="hud"></canvas>
-<script type="module" src="app.js"></script>
-</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#030a11">
+    <link rel="stylesheet" href="theme.css">
+    <title>FRIDAY OS</title>
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">HOME INTELLIGENCE SYSTEM</p>
+          <h1>F.R.I.D.A.Y.</h1>
+        </div>
+        <div class="clock">
+          <strong id="clock">--:--</strong>
+          <span id="date">INITIALIZING</span>
+        </div>
+      </header>
+
+      <section class="status-strip">
+        <div class="connection">
+          <span id="status-dot" class="dot"></span>
+          <span id="connection-status">HOME ASSISTANT OFFLINE</span>
+        </div>
+        <button id="configure" class="text-button" type="button">CONFIGURE LINK</button>
+      </section>
+
+      <section class="dashboard">
+        <article class="panel briefing">
+          <div class="panel-heading">
+            <span>DAILY STATUS</span><span>01</span>
+          </div>
+          <h2 id="greeting">Good afternoon, Kevin.</h2>
+          <p id="summary">FRIDAY is standing by. Connect Home Assistant to begin live analysis.</p>
+          <div class="recommendation">
+            <span>RECOMMENDATION</span>
+            <strong id="recommendation">Complete system link.</strong>
+          </div>
+        </article>
+
+        <article class="panel recovery-panel">
+          <div class="panel-heading">
+            <span>WHOOP RECOVERY</span><span>02</span>
+          </div>
+          <div class="gauge" id="recovery-gauge" style="--value:0;--gauge:#39d5ff">
+            <div class="gauge-core">
+              <strong id="recovery">--</strong>
+              <span>PERCENT</span>
+            </div>
+          </div>
+          <p id="recovery-label">AWAITING BIOMETRICS</p>
+        </article>
+
+        <article class="panel metrics-panel">
+          <div class="panel-heading">
+            <span>PERFORMANCE MATRIX</span><span>03</span>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><span>SLEEP</span><strong id="sleep">--</strong><small>%</small></div>
+            <div class="metric"><span>HRV</span><strong id="hrv">--</strong><small>MS</small></div>
+            <div class="metric"><span>RHR</span><strong id="rhr">--</strong><small>BPM</small></div>
+            <div class="metric"><span>STRAIN</span><strong id="strain">--</strong><small>/21</small></div>
+          </div>
+        </article>
+
+        <article class="panel home-panel">
+          <div class="panel-heading">
+            <span>PROPERTY STATUS</span><span>04</span>
+          </div>
+          <div class="home-grid">
+            <div class="home-state"><span>GARAGE</span><strong id="garage">UNKNOWN</strong></div>
+            <div class="home-state"><span>EXTERIOR</span><strong id="doors">SCANNING</strong></div>
+            <div class="home-state"><span>COOP</span><strong id="coop">SCANNING</strong></div>
+            <div class="home-state"><span>SYSTEMS</span><strong id="systems">OFFLINE</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <footer>
+        <span>FRIDAY OS <b>v0.3</b></span>
+        <span id="entity-count">0 ENTITIES LINKED</span>
+      </footer>
+    </main>
+
+    <dialog id="setup">
+      <form id="setup-form" method="dialog">
+        <div class="panel-heading"><span>HOME ASSISTANT LINK</span><span>AUTH</span></div>
+        <p>Enter your Home Assistant address and a Long-Lived Access Token. The token stays in this browser.</p>
+        <label>HOME ASSISTANT URL
+          <input id="ha-url" type="url" placeholder="http://homeassistant.local:8123" required>
+        </label>
+        <label>LONG-LIVED ACCESS TOKEN
+          <textarea id="ha-token" rows="4" required></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button id="cancel" class="text-button" type="button">CANCEL</button>
+          <button class="primary-button" type="submit">CONNECT</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
