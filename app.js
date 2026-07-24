@@ -2,10 +2,14 @@ import { callService, connectHA, subscribe } from './websocket.js';
 
 const $ = (id) => document.getElementById(id);
 const entities = new Map();
+const localConfig = window.FRIDAY_CONFIG || {};
+const localToken = typeof localConfig.token === 'string' ? localConfig.token.trim() : '';
+const tokenFromLocalConfig = Boolean(localToken);
 const saved = {
-  url: localStorage.getItem('friday.haUrl') || 'http://homeassistant.local:8123',
-  token: localStorage.getItem('friday.haToken') || ''
+  url: localConfig.haUrl || localConfig.url || localStorage.getItem('friday.haUrl') || 'http://homeassistant.local:8123',
+  token: localToken || localStorage.getItem('friday.haToken') || ''
 };
+if (tokenFromLocalConfig) localStorage.removeItem('friday.haToken');
 const mappingKeys = [
   'recovery', 'sleep', 'hrv', 'rhr', 'strain',
   'garage', 'frontDoor', 'backDoor', 'coopDoor'
@@ -169,7 +173,10 @@ subscribe((event) => {
 
 $('configure').addEventListener('click', () => {
   $('ha-url').value = saved.url;
-  $('ha-token').value = saved.token;
+  $('ha-token').value = tokenFromLocalConfig ? '' : saved.token;
+  $('ha-token').placeholder = tokenFromLocalConfig
+    ? 'Loaded from config.local.js'
+    : 'Paste your Long-Lived Access Token';
   mappingKeys.forEach((key) => { $(`map-${key}`).value = mappings[key]; });
   $('setup').showModal();
 });
@@ -178,9 +185,15 @@ $('cancel').addEventListener('click', () => $('setup').close());
 
 $('setup-form').addEventListener('submit', () => {
   saved.url = $('ha-url').value.trim();
-  saved.token = $('ha-token').value.trim();
+  const enteredToken = $('ha-token').value.trim();
+  saved.token = localToken || enteredToken || saved.token;
+  if (!saved.token) {
+    window.alert('Add a Long-Lived Access Token or create config.local.js.');
+    return;
+  }
   localStorage.setItem('friday.haUrl', saved.url);
-  localStorage.setItem('friday.haToken', saved.token);
+  if (tokenFromLocalConfig) localStorage.removeItem('friday.haToken');
+  else localStorage.setItem('friday.haToken', saved.token);
   mappingKeys.forEach((key) => {
     mappings[key] = $(`map-${key}`).value.trim();
     localStorage.setItem(`friday.entity.${key}`, mappings[key]);
