@@ -3,6 +3,7 @@ let socket;
 let messageId = 1;
 let reconnectTimer;
 let credentials;
+const pending = new Map();
 
 function websocketUrl(baseUrl) {
   const url = new URL(baseUrl);
@@ -16,7 +17,9 @@ function emit(event) {
 }
 
 function send(type, extra = {}) {
-  socket.send(JSON.stringify({ id: messageId++, type, ...extra }));
+  const id = messageId++;
+  socket.send(JSON.stringify({ id, type, ...extra }));
+  return id;
 }
 
 export function subscribe(listener) {
@@ -28,6 +31,28 @@ export function disconnect() {
   clearTimeout(reconnectTimer);
   credentials = null;
   socket?.close();
+}
+
+export function callService(domain, service, serviceData = {}, target = {}) {
+  return new Promise((resolve, reject) => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      reject(new Error('Home Assistant is not connected.'));
+      return;
+    }
+
+    const id = send('call_service', {
+      domain,
+      service,
+      service_data: serviceData,
+      target
+    });
+    pending.set(id, { resolve, reject });
+    setTimeout(() => {
+      if (!pending.has(id)) return;
+      pending.delete(id);
+      reject(new Error('Home Assistant did not respond.'));
+    }, 10000);
+  });
 }
 
 export function connectHA(baseUrl, token) {
@@ -55,8 +80,15 @@ export function connectHA(baseUrl, token) {
     } else if (message.type === 'auth_invalid') {
       credentials = null;
       emit({ type: 'status', status: 'auth-invalid' });
-    } else if (message.type === 'result' && Array.isArray(message.result)) {
-      emit({ type: 'states', states: message.result });
+    } else if (message.type === 'result') {
+      const request = pending.get(message.id);
+      if (request) {
+        pending.delete(message.id);
+        if (message.success) request.resolve(message.result);
+        else request.reject(new Error(message.error?.message || 'Service call failed.'));
+      } else if (Array.isArray(message.result)) {
+        emit({ type: 'states', states: message.result });
+      }
     } else if (message.type === 'event' && message.event?.event_type === 'state_changed') {
       emit({ type: 'state', state: message.event.data.new_state });
     }
