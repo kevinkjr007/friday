@@ -54,8 +54,53 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
 }
 .panel::after { content: ""; position: absolute; left: 18px; bottom: 0; width: 65px; height: 2px; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
 .panel-heading { display: flex; justify-content: space-between; color: var(--cyan); font-size: 10px; border-bottom: 1px solid var(--line); padding-bottom: 9px; }
-.briefing { grid-column: span 2; }
-.briefing h2 { margin: 34px 0 12px; font-size: clamp(24px, 3vw, 42px); letter-spacing: .02em; }
+.hero-command {
+  position: relative;
+  grid-column: 1 / -1;
+  min-height: 430px;
+  display: grid;
+  grid-template-columns: minmax(360px, .9fr) minmax(90px, .24fr) minmax(520px, 1.55fr);
+  align-items: center;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 29% 53%, rgba(57,213,255,.14), transparent 27%),
+    linear-gradient(90deg, rgba(57,213,255,.045), transparent 44%),
+    rgba(3,12,19,.36);
+}
+.hero-command::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .4;
+  background:
+    linear-gradient(90deg, transparent 0 27%, rgba(57,213,255,.23) 27% 27.08%, transparent 27.08%),
+    linear-gradient(0deg, transparent 49.8%, rgba(57,213,255,.12) 50%, transparent 50.2%);
+}
+.hero-command::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 84px;
+  height: 16px;
+  border-top: 2px solid var(--cyan);
+  border-right: 2px solid var(--cyan);
+}
+.briefing {
+  position: relative;
+  z-index: 4;
+  align-self: stretch;
+  padding: 58px clamp(28px,4vw,72px) 44px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.briefing-index { display: flex; justify-content: space-between; color: var(--cyan); font-size: 10px; }
+.briefing-index b { font-weight: 400; }
+.briefing h2 { margin: 38px 0 12px; font-size: clamp(28px, 3.2vw, 48px); letter-spacing: .02em; }
 .briefing > p { max-width: 780px; color: #a9cbd5; line-height: 1.65; letter-spacing: .015em; }
 .recommendation { margin-top: 28px; border-left: 2px solid var(--cyan); padding: 4px 0 4px 14px; }
 .recommendation span { display: block; color: var(--muted); font-size: 9px; margin-bottom: 5px; }
@@ -76,31 +121,54 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
 
 /* FRIDAY holographic presence */
 .presence-panel {
+  position: relative;
+  z-index: 2;
+  align-self: stretch;
   min-height: 430px;
   overflow: hidden;
-  padding-bottom: 14px;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(57,213,255,.13), transparent 42%),
-    linear-gradient(180deg, rgba(57,213,255,.045), transparent 48%),
-    var(--panel);
+  background: transparent;
+}
+.presence-label {
+  position: absolute;
+  z-index: 7;
+  left: 20px;
+  right: 12px;
+  top: 17px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--cyan);
+  font-size: 9px;
+}
+.presence-label strong { font-weight: 500; }
+.presence-label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 19px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
 }
 .portrait-stage {
   --look-x: 0px;
   --look-y: 0px;
   position: relative;
-  height: 342px;
-  margin: 9px -10px 0;
+  height: 430px;
+  margin: 0;
   overflow: hidden;
   isolation: isolate;
-  mask-image: linear-gradient(to bottom, #000 0 81%, transparent 100%);
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 9%, #000 88%, transparent 100%),
+    linear-gradient(to bottom, #000 0 80%, transparent 100%);
+  mask-composite: intersect;
 }
 .friday-portrait {
   position: absolute;
   z-index: 2;
-  width: 100%;
-  height: 112%;
-  left: 0;
-  top: -2%;
+  width: 116%;
+  height: 116%;
+  left: -8%;
+  top: -3%;
   object-fit: cover;
   object-position: 50% 18%;
   opacity: .78;
@@ -119,8 +187,8 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
   border: 1px solid rgba(57,213,255,.18);
   transform: translate(-50%,-50%);
 }
-.orbit-one { width: 88%; animation: orbit 18s linear infinite; }
-.orbit-two { width: 68%; border-style: dashed; animation: orbit-reverse 12s linear infinite; }
+.orbit-one { width: 96%; animation: orbit 18s linear infinite; }
+.orbit-two { width: 74%; border-style: dashed; animation: orbit-reverse 12s linear infinite; }
 .holo-sweep {
   position: absolute;
   z-index: 3;
@@ -131,17 +199,31 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
   mix-blend-mode: screen;
   animation: holo-scan 5.5s linear infinite;
 }
+.reactor-cluster {
+  position: relative;
+  z-index: 6;
+  width: 150px;
+  aspect-ratio: 1;
+  justify-self: center;
+  filter: drop-shadow(0 0 20px rgba(57,213,255,.18));
+}
 .reactor {
   position: absolute;
-  z-index: 5;
+  z-index: 3;
   left: 50%;
-  bottom: 13px;
-  width: 72px;
+  top: 50%;
+  width: 118px;
   aspect-ratio: 1;
-  transform: translateX(-50%);
+  transform: translate(-50%,-50%);
   border-radius: 50%;
-  filter: drop-shadow(0 0 9px rgba(57,213,255,.8));
+  filter: drop-shadow(0 0 13px rgba(57,213,255,.82));
 }
+.reactor-axis { position: absolute; z-index: 1; background: linear-gradient(90deg, transparent, rgba(57,213,255,.55), transparent); }
+.axis-horizontal { left: -105px; right: -155px; top: 50%; height: 1px; }
+.axis-vertical { top: -35px; bottom: -35px; left: 50%; width: 1px; background: linear-gradient(transparent, rgba(57,213,255,.35), transparent); }
+.reactor-readout { position: absolute; left: 50%; white-space: nowrap; color: var(--muted); font-size: 7px; }
+.readout-top { top: 2px; transform: translateX(-50%); }
+.readout-bottom { bottom: 0; transform: translateX(-50%); color: var(--cyan); }
 .reactor-ring, .reactor-core { position: absolute; inset: 0; border-radius: 50%; }
 .ring-outer {
   border: 2px solid rgba(125,232,255,.72);
@@ -150,18 +232,23 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
   animation: reactor-spin 9s linear infinite;
 }
 .ring-mid {
-  inset: 10px;
+  inset: 16px;
   border: 1px dashed rgba(182,244,255,.85);
   animation: reactor-spin-reverse 4.5s linear infinite;
 }
-.ring-inner { inset: 18px; border: 2px solid rgba(159,239,255,.9); }
+.ring-inner { inset: 31px; border: 2px solid rgba(159,239,255,.9); }
 .reactor-core {
-  inset: 24px;
+  inset: 42px;
   background: #d9fbff;
   box-shadow: 0 0 8px #fff, 0 0 19px var(--cyan), 0 0 34px rgba(57,213,255,.82);
   animation: reactor-breathe 2.8s ease-in-out infinite;
 }
 .presence-caption {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -179,15 +266,15 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
 .presence-panel[data-state="connected"] .presence-pulse { background: #55f29a; }
 .presence-panel[data-state="connecting"] .presence-pulse { background: #ffd166; animation: pulse .8s infinite; }
 .presence-panel[data-state="connected"] .friday-portrait { opacity: .96; filter: saturate(1) contrast(1.1) drop-shadow(0 0 20px rgba(57,213,255,.42)); }
-.presence-panel[data-state="connected"] .reactor { animation: reactor-float 4s ease-in-out infinite; }
-.presence-panel[data-state="connecting"] .ring-outer { animation-duration: 1.5s; }
-.presence-panel[data-state="connecting"] .ring-mid { animation-duration: 1s; }
+.hero-command:has(.presence-panel[data-state="connected"]) .reactor-cluster { animation: reactor-float 4s ease-in-out infinite; }
+.hero-command:has(.presence-panel[data-state="connecting"]) .ring-outer { animation-duration: 1.5s; }
+.hero-command:has(.presence-panel[data-state="connecting"]) .ring-mid { animation-duration: 1s; }
 .presence-panel[data-state="disconnected"] .friday-portrait,
 .presence-panel[data-state="error"] .friday-portrait,
 .presence-panel[data-state="auth-invalid"] .friday-portrait { opacity: .42; filter: grayscale(.55) brightness(.7); }
-.presence-panel[data-state="disconnected"] .reactor,
-.presence-panel[data-state="error"] .reactor,
-.presence-panel[data-state="auth-invalid"] .reactor { opacity: .34; filter: none; }
+.hero-command:has(.presence-panel[data-state="disconnected"]) .reactor-cluster,
+.hero-command:has(.presence-panel[data-state="error"]) .reactor-cluster,
+.hero-command:has(.presence-panel[data-state="auth-invalid"]) .reactor-cluster { opacity: .34; filter: none; }
 
 @keyframes orbit { to { transform: translate(-50%,-50%) rotate(360deg); } }
 @keyframes orbit-reverse { to { transform: translate(-50%,-50%) rotate(-360deg); } }
@@ -195,7 +282,7 @@ h1 { color: var(--cyan); font-size: clamp(28px, 4vw, 52px); line-height: 1; marg
 @keyframes reactor-spin { to { transform: rotate(360deg); } }
 @keyframes reactor-spin-reverse { to { transform: rotate(-360deg); } }
 @keyframes reactor-breathe { 50% { transform: scale(.78); opacity: .7; box-shadow: 0 0 5px #fff, 0 0 12px var(--cyan), 0 0 22px rgba(57,213,255,.6); } }
-@keyframes reactor-float { 50% { transform: translateX(-50%) translateY(-3px); } }
+@keyframes reactor-float { 50% { transform: translateY(-4px) scale(1.015); } }
 @keyframes hologram-flicker {
   0%, 93%, 96%, 100% { opacity: .96; }
   94% { opacity: .72; }
@@ -231,15 +318,24 @@ legend { padding: 0 8px; color: var(--cyan); font-size: 9px; }
 
 @media (max-width: 900px) {
   .dashboard { grid-template-columns: 1fr 1fr; }
-  .briefing { grid-column: span 2; }
-  .presence-panel { grid-column: span 2; }
+  .hero-command { grid-template-columns: 1fr 130px 1.25fr; }
+  .briefing { padding: 52px 25px 36px 20px; }
 }
 
 @media (max-width: 600px) {
   .shell { padding: 16px 13px 12px; }
   .dashboard { grid-template-columns: 1fr; }
-  .briefing, .presence-panel { grid-column: auto; }
-  .portrait-stage { height: 390px; }
+  .hero-command { display: block; min-height: 720px; }
+  .presence-panel { min-height: 410px; }
+  .portrait-stage { height: 430px; }
+  .reactor-cluster { position: absolute; top: 336px; left: 50%; transform: translateX(-50%); width: 126px; }
+  .reactor { width: 96px; }
+  .ring-mid { inset: 13px; }
+  .ring-inner { inset: 25px; }
+  .reactor-core { inset: 34px; }
+  .briefing { padding: 24px 22px 36px; text-align: center; }
+  .briefing h2 { margin-top: 25px; }
+  .recommendation { text-align: left; }
   .panel { min-height: 230px; }
   h1 { letter-spacing: .15em; }
 }
