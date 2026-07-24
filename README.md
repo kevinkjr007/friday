@@ -1,35 +1,21 @@
-# FRIDAY OS v0.9
+# FRIDAY OS v1.0
 
-A responsive JARVIS-inspired command dashboard for Home Assistant.
+A responsive JARVIS-inspired Home Assistant command center based on the original FRIDAY concept design.
 
-## Included
+## v1.0 visual redesign
 
-- Live Home Assistant WebSocket connection with automatic reconnect
-- Optional persistent local configuration file for the Home Assistant URL and token
-- Live entity state store
-- Explicitly mapped WHOOP recovery, sleep, HRV, resting heart rate, and strain
-- Garage, exterior door, chicken coop, and unavailable-device status
-- Responsive desktop, tablet, and mobile HUD
-- Original holographic FRIDAY portrait as the visual command presence
-- Animated arc-reactor core tied to Home Assistant connection state
-- Subtle cursor-responsive portrait parallax on desktop
-- Reduced-motion support through the browser's motion preference
-- Recovery-aware daily recommendation
-- Browser-based entity mapping for WHOOP, garage, exterior doors, and coop
-- Your known WHOOP sensors and chicken-coop door sensor are preconfigured by entity ID
-- No automatic entity guessing; unknown capabilities remain unconfigured
-- Confirmed garage and coop cover controls
-- Default link address set to `http://homeassistant.local:8123`
+- Restores the original three-column command-center composition
+- Places the animated reactor above FRIDAY as the primary system overview
+- Centers FRIDAY as a borderless holographic presence
+- Reorganizes WHOOP biometrics into the left telemetry rail
+- Places actual mapped property entities and HA telemetry in the right rail
+- Keeps insights and system advisories integrated beside FRIDAY
+- Uses only explicitly mapped Home Assistant entities; no generic sensor guessing
+- Preserves live controls, persistent local credentials, connection states, and responsive behavior
 
-## Install on Home Assistant Green
+## Install
 
-Copy the repository files into:
-
-```text
-/homeassistant/www/friday/
-```
-
-Open:
+Copy the repository files into `/homeassistant/www/friday/`, preserving your existing `config.local.js`, then open:
 
 ```text
 http://homeassistant.local:8123/local/friday/index.html
@@ -37,7 +23,7 @@ http://homeassistant.local:8123/local/friday/index.html
 
 ## Persistent local credentials
 
-Copy `config.local.example.js` to `config.local.js` in `/homeassistant/www/friday/`, then replace the placeholder token:
+Copy `config.local.example.js` to `config.local.js`, then add your token:
 
 ```js
 window.FRIDAY_CONFIG = {
@@ -46,16 +32,12 @@ window.FRIDAY_CONFIG = {
 };
 ```
 
-Keep `config.local.js` in the Home Assistant folder when updating the other dashboard files. It is ignored by Git and must never be committed. When present, its token takes priority and FRIDAY removes any older token from browser local storage.
-
-Anything served from `/config/www/` is reachable to clients that can access its URL. Use this only on a trusted local network and do not expose the FRIDAY directory publicly.
-
-If the local file is absent, select **Configure Link** and enter the token in the browser as before.
+`config.local.js` is ignored by Git. Keep it in the Home Assistant folder when updating the dashboard.
 
 ## Entity mapping
 
-After the first successful connection, select only the entities that exist in your Home Assistant instance under **Configure Link**. FRIDAY never guesses entities by name. Blank mappings remain visibly unconfigured and do not control anything.
+Use **Configure Link** to select only entities that exist in your Home Assistant instance. Known WHOOP sensors and the chicken-coop door sensor remain the built-in defaults. Blank mappings remain visibly unconfigured and cannot trigger controls.
 
 ## Version
 
-v0.9 — open command-stage layout with a freestanding FRIDAY presence and floating reactor core
+v1.0 — original-concept command-center layout
