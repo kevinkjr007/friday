@@ -1,15 +1,14 @@
-# FRIDAY OS v1.1
+# FRIDAY OS v1.2
 
 A responsive JARVIS-inspired Home Assistant command center based on the original FRIDAY concept design.
 
-## v1.1 home intelligence
+## v1.2 priority command center
 
-- Removes the "AI Assistant" designation; FRIDAY is the home's intelligence
-- Adds live thermostat temperature, mode, setpoint, and adjustment controls
-- Adds mapped outdoor temperature, humidity, rainfall, and coop temperature telemetry
-- Adds Oasis controls for the water feature, porch fan, porch lights, and dog-bowl valve
-- Resolves MCP-confirmed device names at runtime while preserving explicit entity selectors
-- Keeps the v1.0 command-center composition, WHOOP data, doors, and system telemetry
+- Counts only explicitly mapped priority systems when reporting availability
+- Replaces unused garage and exterior-door cards with focused chicken-coop access
+- Adds reactor-wing readouts for WHOOP readiness and priority home status
+- Improves vertical scaling for common desktop dashboard heights
+- Preserves climate, weather, Oasis, WHOOP, Home Assistant, and local credential support
 
 ## Install
 
@@ -38,4 +37,4 @@ Use **Configure Link** to select only entities that exist in your Home Assistant
 
 ## Version
 
-v1.1 — climate, weather, coop, and Oasis controls
+v1.2 — priority status, cleaner availability, and responsive vertical scaling
