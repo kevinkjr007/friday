@@ -12,7 +12,9 @@ const saved = {
 if (tokenFromLocalConfig) localStorage.removeItem('friday.haToken');
 const mappingKeys = [
   'recovery', 'sleep', 'hrv', 'rhr', 'strain',
-  'garage', 'frontDoor', 'backDoor', 'coopDoor'
+  'garage', 'frontDoor', 'backDoor', 'coopDoor',
+  'climate', 'outdoorTemp', 'outdoorHumidity', 'rainToday', 'coopTemp',
+  'oasisWater', 'oasisFan', 'oasisLights', 'oasisValve'
 ];
 const defaultMappings = {
   recovery: 'sensor.whoop_recovery_score',
@@ -23,7 +25,16 @@ const defaultMappings = {
   garage: '',
   frontDoor: '',
   backDoor: '',
-  coopDoor: 'binary_sensor.chicken_coop_door_door'
+  coopDoor: 'binary_sensor.chicken_coop_door_door',
+  climate: '@Thermostat',
+  outdoorTemp: '',
+  outdoorHumidity: '',
+  rainToday: '',
+  coopTemp: '',
+  oasisWater: '@Water Feature',
+  oasisFan: '@TP-LINK_Smart Plug_E7BD Big Ass Fan',
+  oasisLights: '@TP-LINK_Smart Plug_E7BD Back Porch Lights',
+  oasisValve: '@Oasis'
 };
 const mappings = Object.fromEntries(
   mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || defaultMappings[key] || ''])
@@ -47,7 +58,13 @@ function numberState(key) {
 }
 
 function mappedEntity(key) {
-  return entities.get(mappings[key]) || null;
+  const mapping = mappings[key];
+  if (!mapping) return null;
+  if (!mapping.startsWith('@')) return entities.get(mapping) || null;
+  const wanted = mapping.slice(1).toLowerCase();
+  return [...entities.values()].find((entity) =>
+    (entity.attributes?.friendly_name || '').toLowerCase() === wanted
+  ) || null;
 }
 
 function isOpen(entity) {
@@ -100,6 +117,36 @@ function render() {
   $('coop-action').disabled = !coopDoor || !coopDoor.entity_id.startsWith('cover.');
   $('coop-action').textContent = isOpen(coopDoor) ? 'CLOSE' : 'OPEN';
 
+  const climate = mappedEntity('climate');
+  const currentTemp = Number.parseFloat(climate?.attributes?.current_temperature);
+  const targetTemp = Number.parseFloat(climate?.attributes?.temperature);
+  $('climate-current').textContent = Number.isFinite(currentTemp) ? `${Math.round(currentTemp)}°` : '--°';
+  $('climate-target').textContent = Number.isFinite(targetTemp) ? `${Math.round(targetTemp)}°` : '--°';
+  $('climate-mode').textContent = climate ? climate.state.toUpperCase() : 'NOT CONFIGURED';
+  $('climate-down').disabled = !climate || !Number.isFinite(targetTemp);
+  $('climate-up').disabled = !climate || !Number.isFinite(targetTemp);
+
+  const renderEnvironment = (id, key, suffix = '') => {
+    const value = numberState(key);
+    $(id).textContent = value === null ? `--${suffix}` : `${Math.round(value * 10) / 10}${suffix}`;
+  };
+  renderEnvironment('outdoor-temp', 'outdoorTemp', '°');
+  renderEnvironment('outdoor-humidity', 'outdoorHumidity', '%');
+  renderEnvironment('rain-today', 'rainToday');
+  renderEnvironment('coop-temp', 'coopTemp', '°');
+
+  const oasisControls = [
+    ['oasis-water', 'oasisWater'], ['oasis-fan', 'oasisFan'],
+    ['oasis-lights', 'oasisLights'], ['oasis-valve', 'oasisValve']
+  ];
+  oasisControls.forEach(([id, key]) => {
+    const entity = mappedEntity(key);
+    const button = $(id);
+    button.disabled = !entity;
+    button.classList.toggle('active', entity?.state === 'on' || entity?.state === 'open');
+    button.querySelector('strong').textContent = entity ? entity.state.toUpperCase() : 'NOT MAPPED';
+  });
+
   const unavailable = [...entities.values()].filter((entity) => entity.state === 'unavailable');
   $('systems').textContent = unavailable.length ? `${unavailable.length} UNAVAILABLE` : 'NOMINAL';
   $('systems').classList.toggle('warning', unavailable.length > 0);
@@ -134,6 +181,27 @@ function populateEntityLists() {
   };
   fillList($('property-entities'), propertyCandidates);
   fillList($('sensor-entities'), sensorCandidates);
+  fillList($('all-entities'), [...entities.values()].sort((a, b) => entityLabel(a).localeCompare(entityLabel(b))));
+}
+
+async function adjustClimate(delta) {
+  const climate = mappedEntity('climate');
+  const target = Number.parseFloat(climate?.attributes?.temperature);
+  if (!climate || !Number.isFinite(target)) return;
+  await callService('climate', 'set_temperature', { temperature: target + delta }, { entity_id: climate.entity_id });
+}
+
+async function toggleMappedEntity(key) {
+  const entity = mappedEntity(key);
+  if (!entity) return;
+  const domain = entity.entity_id.split('.')[0];
+  const turnOff = ['on', 'open'].includes(entity.state);
+  const service = domain === 'valve' ? (turnOff ? 'close_valve' : 'open_valve') : (turnOff ? 'turn_off' : 'turn_on');
+  try {
+    await callService(domain, service, {}, { entity_id: entity.entity_id });
+  } catch (error) {
+    window.alert(error.message);
+  }
 }
 
 async function operateCover(key) {
@@ -232,6 +300,12 @@ $('setup-form').addEventListener('submit', () => {
 
 $('garage-action').addEventListener('click', () => operateCover('garage'));
 $('coop-action').addEventListener('click', () => operateCover('coopDoor'));
+$('climate-down').addEventListener('click', () => adjustClimate(-1));
+$('climate-up').addEventListener('click', () => adjustClimate(1));
+[
+  ['oasis-water', 'oasisWater'], ['oasis-fan', 'oasisFan'],
+  ['oasis-lights', 'oasisLights'], ['oasis-valve', 'oasisValve']
+].forEach(([id, key]) => $(id).addEventListener('click', () => toggleMappedEntity(key)));
 
 const portraitStage = document.querySelector('.portrait-stage');
 if (portraitStage && window.matchMedia('(pointer:fine)').matches) {
