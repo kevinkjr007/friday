@@ -24,10 +24,10 @@ const defaultMappings = {
   strain: 'sensor.whoop_day_strain',
   coopDoor: 'binary_sensor.chicken_coop_door_door',
   climate: '@Thermostat',
-  outdoorTemp: '',
-  outdoorHumidity: '',
+  outdoorTemp: '@Front yard Temperature',
+  outdoorHumidity: '@Front yard Humidity',
   rainToday: '',
-  coopTemp: '',
+  coopTemp: '@Chicken Coop Temperature Temperature',
   oasisWater: '@Water Feature',
   oasisFan: '@TP-LINK_Smart Plug_E7BD Big Ass Fan',
   oasisLights: '@TP-LINK_Smart Plug_E7BD Back Porch Lights',
@@ -49,7 +49,7 @@ function tick() {
 }
 
 function numberState(key) {
-  const state = entities.get(mappings[key]);
+  const state = mappedEntity(key);
   const value = Number.parseFloat(state?.state);
   return Number.isFinite(value) ? value : null;
 }
@@ -119,6 +119,7 @@ function render() {
   renderEnvironment('outdoor-temp', 'outdoorTemp', '°');
   renderEnvironment('outdoor-humidity', 'outdoorHumidity', '%');
   renderEnvironment('rain-today', 'rainToday');
+  if (!mappings.rainToday) $('rain-today').textContent = 'MAP SENSOR';
   renderEnvironment('coop-temp', 'coopTemp', '°');
 
   const oasisControls = [
