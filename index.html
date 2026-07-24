@@ -3,173 +3,164 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="#030a11">
+    <meta name="theme-color" content="#02080d">
     <link rel="stylesheet" href="theme.css">
-    <title>FRIDAY OS</title>
+    <title>FRIDAY Command Center</title>
   </head>
   <body>
     <div class="scanlines" aria-hidden="true"></div>
     <main class="shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">HOME INTELLIGENCE SYSTEM</p>
-          <h1>F.R.I.D.A.Y.</h1>
+      <header class="topbar hud-frame">
+        <div class="header-data date-block"><span>DATE</span><strong id="date">INITIALIZING</strong></div>
+        <div class="title-block">
+          <h1>F.R.I.D.A.Y. COMMAND CENTER</h1>
+          <p>HOME SYSTEMS // LIVE TELEMETRY</p>
         </div>
-        <div class="clock">
-          <strong id="clock">--:--</strong>
-          <span id="date">INITIALIZING</span>
+        <div class="header-data status-block">
+          <span>SYSTEM STATUS</span><strong id="connection-status">OFFLINE</strong>
+          <button id="configure" class="text-button" type="button">CONFIGURE LINK</button>
         </div>
+        <div class="header-data time-block"><span>TIME</span><strong id="clock">--:--</strong></div>
       </header>
 
-      <section class="status-strip">
-        <div class="connection">
-          <span id="status-dot" class="dot"></span>
-          <span id="connection-status">HOME ASSISTANT OFFLINE</span>
-        </div>
-        <button id="configure" class="text-button" type="button">CONFIGURE LINK</button>
-      </section>
-
-      <section class="dashboard">
-        <section class="hero-command">
-          <article id="friday-presence" class="presence-panel" data-state="disconnected">
-            <div class="presence-label">
-              <span>FRIDAY // COGNITIVE CORE</span>
-              <strong id="friday-mode">STANDBY</strong>
+      <section class="command-grid">
+        <aside class="left-rail">
+          <article class="panel compact recovery-panel">
+            <div class="panel-heading"><span>♡ &nbsp; WHOOP RECOVERY</span><span>01</span></div>
+            <div class="gauge" id="recovery-gauge" style="--value:0;--gauge:#39d5ff">
+              <div class="gauge-core"><strong id="recovery">--</strong><span>%</span></div>
             </div>
+            <p id="recovery-label">AWAITING BIOMETRICS</p>
+          </article>
+
+          <article class="panel compact">
+            <div class="panel-heading"><span>ZZ &nbsp; SLEEP PERFORMANCE</span><span>02</span></div>
+            <div class="readout"><strong id="sleep">--</strong><span>%</span></div>
+            <p>PERFORMANCE</p>
+          </article>
+
+          <article class="panel compact dual-metric">
+            <div class="panel-heading"><span>⌁ &nbsp; BIOMETRIC SIGNALS</span><span>03</span></div>
+            <div class="metric-pair">
+              <div><span>HRV</span><strong id="hrv">--</strong><small>MS</small></div>
+              <div><span>RESTING HR</span><strong id="rhr">--</strong><small>BPM</small></div>
+            </div>
+          </article>
+
+          <article class="panel compact strain-panel">
+            <div class="panel-heading"><span>◒ &nbsp; DAY STRAIN</span><span>04</span></div>
+            <div class="readout"><strong id="strain">--</strong><span>/21</span></div>
+            <p>DAILY LOAD</p>
+          </article>
+        </aside>
+
+        <section class="center-stage">
+          <article class="panel overview-panel">
+            <div class="panel-heading"><span>SYSTEM OVERVIEW</span><span id="friday-mode">STANDBY</span></div>
+            <div class="overview-body">
+              <div class="circuit circuit-left" aria-hidden="true"></div>
+              <div class="reactor-cluster" aria-hidden="true">
+                <span class="reactor-orbit orbit-a"></span>
+                <span class="reactor-orbit orbit-b"></span>
+                <div class="reactor">
+                  <i class="reactor-ring ring-outer"></i>
+                  <i class="reactor-ring ring-mid"></i>
+                  <i class="reactor-ring ring-inner"></i>
+                  <i class="reactor-core"></i>
+                </div>
+                <strong id="friday-status">AWAITING SYSTEM LINK</strong>
+              </div>
+              <div class="circuit circuit-right" aria-hidden="true"></div>
+            </div>
+          </article>
+
+          <section id="friday-presence" class="friday-stage" data-state="disconnected">
+            <article class="panel insight-panel">
+              <div class="panel-heading"><span>◉ &nbsp; FRIDAY INSIGHTS</span><span>05</span></div>
+              <h2 id="greeting">Good afternoon, Kevin.</h2>
+              <p id="summary">FRIDAY is standing by. Connect Home Assistant to begin live analysis.</p>
+            </article>
+
             <div class="portrait-stage" aria-label="FRIDAY holographic interface">
-              <div class="portrait-orbit orbit-one"></div>
-              <div class="portrait-orbit orbit-two"></div>
+              <div class="portrait-orbit portrait-orbit-one"></div>
+              <div class="portrait-orbit portrait-orbit-two"></div>
               <img class="friday-portrait" src="assets/friday-hologram-v1.webp" alt="FRIDAY holographic AI">
               <div class="holo-sweep" aria-hidden="true"></div>
+              <div class="portrait-title"><strong>F.R.I.D.A.Y.</strong><span>AI ASSISTANT</span></div>
+              <div class="holo-base" aria-hidden="true"><i></i><i></i><i></i></div>
             </div>
-            <div class="presence-caption">
-              <span class="presence-pulse"></span>
-              <strong id="friday-status">AWAITING SYSTEM LINK</strong>
-            </div>
-          </article>
 
-          <div class="reactor-cluster" aria-hidden="true">
-            <span class="reactor-axis axis-horizontal"></span>
-            <span class="reactor-axis axis-vertical"></span>
-            <div class="reactor">
-              <i class="reactor-ring ring-outer"></i>
-              <i class="reactor-ring ring-mid"></i>
-              <i class="reactor-ring ring-inner"></i>
-              <i class="reactor-core"></i>
-            </div>
-            <span class="reactor-readout readout-top">ARC // 99.8%</span>
-            <span class="reactor-readout readout-bottom">HOME CORE</span>
-          </div>
-
-          <article class="briefing">
-            <div class="briefing-index"><span>DAILY INTELLIGENCE</span><b>01</b></div>
-            <h2 id="greeting">Good afternoon, Kevin.</h2>
-            <p id="summary">FRIDAY is standing by. Connect Home Assistant to begin live analysis.</p>
-            <div class="recommendation">
-              <span>RECOMMENDATION</span>
-              <strong id="recommendation">Complete system link.</strong>
-            </div>
-          </article>
+            <article class="panel alert-panel">
+              <div class="panel-heading"><span>⬡ &nbsp; SYSTEM ADVISORY</span><span>06</span></div>
+              <div class="recommendation">
+                <span>RECOMMENDATION</span>
+                <strong id="recommendation">Complete system link.</strong>
+              </div>
+              <div class="system-readout"><span>HOME ASSISTANT</span><strong id="systems">OFFLINE</strong></div>
+            </article>
+          </section>
         </section>
 
-        <article class="panel recovery-panel">
-          <div class="panel-heading">
-            <span>WHOOP RECOVERY</span><span>02</span>
-          </div>
-          <div class="gauge" id="recovery-gauge" style="--value:0;--gauge:#39d5ff">
-            <div class="gauge-core">
-              <strong id="recovery">--</strong>
-              <span>PERCENT</span>
+        <aside class="right-rail">
+          <article class="panel property-panel">
+            <div class="panel-heading"><span>▣ &nbsp; DOORS &amp; ACCESS</span><span>07</span></div>
+            <div class="property-stack">
+              <div class="home-state control-state">
+                <span>GARAGE</span><strong id="garage">NOT CONFIGURED</strong>
+                <small id="garage-detail">No entity linked</small>
+                <button id="garage-action" class="mini-button" type="button" disabled>OPEN</button>
+              </div>
+              <div class="home-state">
+                <span>EXTERIOR</span><strong id="doors">NOT CONFIGURED</strong>
+                <small id="doors-detail">No sensors linked</small>
+              </div>
+              <div class="home-state control-state">
+                <span>CHICKEN COOP</span><strong id="coop">SCANNING</strong>
+                <small id="coop-detail">No entity linked</small>
+                <button id="coop-action" class="mini-button" type="button" disabled>OPEN</button>
+              </div>
             </div>
-          </div>
-          <p id="recovery-label">AWAITING BIOMETRICS</p>
-        </article>
+          </article>
 
-        <article class="panel metrics-panel">
-          <div class="panel-heading">
-            <span>PERFORMANCE MATRIX</span><span>03</span>
-          </div>
-          <div class="metric-grid">
-            <div class="metric"><span>SLEEP</span><strong id="sleep">--</strong><small>%</small></div>
-            <div class="metric"><span>HRV</span><strong id="hrv">--</strong><small>MS</small></div>
-            <div class="metric"><span>RHR</span><strong id="rhr">--</strong><small>BPM</small></div>
-            <div class="metric"><span>STRAIN</span><strong id="strain">--</strong><small>/21</small></div>
-          </div>
-        </article>
-
-        <article class="panel home-panel">
-          <div class="panel-heading">
-            <span>PROPERTY STATUS</span><span>04</span>
-          </div>
-          <div class="home-grid">
-            <div class="home-state control-state">
-              <span>GARAGE</span><strong id="garage">UNKNOWN</strong>
-              <small id="garage-detail">No entity linked</small>
-              <button id="garage-action" class="mini-button" type="button" disabled>OPEN</button>
+          <article class="panel telemetry-panel">
+            <div class="panel-heading"><span>⌬ &nbsp; HOME ASSISTANT</span><span>08</span></div>
+            <div class="telemetry-core">
+              <span id="status-dot" class="dot"></span>
+              <strong>CORE LINK</strong>
+              <small id="entity-count">0 ENTITIES LINKED</small>
             </div>
-            <div class="home-state">
-              <span>EXTERIOR</span><strong id="doors">SCANNING</strong>
-              <small id="doors-detail">No sensors linked</small>
-            </div>
-            <div class="home-state control-state">
-              <span>COOP</span><strong id="coop">SCANNING</strong>
-              <small id="coop-detail">No entity linked</small>
-              <button id="coop-action" class="mini-button" type="button" disabled>OPEN</button>
-            </div>
-            <div class="home-state"><span>SYSTEMS</span><strong id="systems">OFFLINE</strong></div>
-          </div>
-        </article>
+          </article>
+        </aside>
       </section>
 
-      <footer>
-        <span>FRIDAY OS <b>v0.9</b></span>
-        <span id="entity-count">0 ENTITIES LINKED</span>
+      <footer class="hud-frame">
+        <span>FRIDAY OS <b>v1.0</b></span>
+        <span>COMMAND INTERFACE // HOME ASSISTANT</span>
+        <span>SECURE LOCAL LINK</span>
       </footer>
     </main>
 
     <dialog id="setup">
       <form id="setup-form" method="dialog">
         <div class="panel-heading"><span>HOME ASSISTANT LINK</span><span>AUTH</span></div>
-        <p>Enter your Home Assistant address and token, then map the property entities you want FRIDAY to monitor. These settings stay in this browser.</p>
-        <label>HOME ASSISTANT URL
-          <input id="ha-url" type="url" placeholder="http://homeassistant.local:8123" required>
-        </label>
-        <label>LONG-LIVED ACCESS TOKEN
-          <textarea id="ha-token" rows="4" placeholder="Paste a token, or load it from config.local.js"></textarea>
-        </label>
-          <fieldset>
-            <legend>WHOOP SENSOR MAPPING</legend>
-            <label>RECOVERY
-              <input id="map-recovery" list="sensor-entities" placeholder="Select your recovery sensor">
-            </label>
-            <label>SLEEP PERFORMANCE
-              <input id="map-sleep" list="sensor-entities" placeholder="Select your sleep sensor">
-            </label>
-            <label>HRV
-              <input id="map-hrv" list="sensor-entities" placeholder="Select your HRV sensor">
-            </label>
-            <label>RESTING HEART RATE
-              <input id="map-rhr" list="sensor-entities" placeholder="Select your resting HR sensor">
-            </label>
-            <label>DAY STRAIN
-              <input id="map-strain" list="sensor-entities" placeholder="Select your strain sensor">
-            </label>
-            <datalist id="sensor-entities"></datalist>
-          </fieldset>
-          <fieldset>
-            <legend>PROPERTY ENTITY MAPPING</legend>
-          <label>GARAGE COVER
-            <input id="map-garage" list="property-entities" placeholder="cover.garage_door">
-          </label>
-          <label>FRONT DOOR SENSOR
-            <input id="map-frontDoor" list="property-entities" placeholder="binary_sensor.front_door">
-          </label>
-          <label>BACK DOOR SENSOR
-            <input id="map-backDoor" list="property-entities" placeholder="binary_sensor.back_door">
-          </label>
-          <label>COOP DOOR
-            <input id="map-coopDoor" list="property-entities" placeholder="cover.chicken_coop_door">
-          </label>
+        <p>Enter your Home Assistant address and token, then map only the entities FRIDAY should monitor.</p>
+        <label>HOME ASSISTANT URL<input id="ha-url" type="url" placeholder="http://homeassistant.local:8123" required></label>
+        <label>LONG-LIVED ACCESS TOKEN<textarea id="ha-token" rows="4" placeholder="Paste a token, or load it from config.local.js"></textarea></label>
+        <fieldset>
+          <legend>WHOOP SENSOR MAPPING</legend>
+          <label>RECOVERY<input id="map-recovery" list="sensor-entities"></label>
+          <label>SLEEP PERFORMANCE<input id="map-sleep" list="sensor-entities"></label>
+          <label>HRV<input id="map-hrv" list="sensor-entities"></label>
+          <label>RESTING HEART RATE<input id="map-rhr" list="sensor-entities"></label>
+          <label>DAY STRAIN<input id="map-strain" list="sensor-entities"></label>
+          <datalist id="sensor-entities"></datalist>
+        </fieldset>
+        <fieldset>
+          <legend>PROPERTY ENTITY MAPPING</legend>
+          <label>GARAGE COVER<input id="map-garage" list="property-entities"></label>
+          <label>FRONT DOOR SENSOR<input id="map-frontDoor" list="property-entities"></label>
+          <label>BACK DOOR SENSOR<input id="map-backDoor" list="property-entities"></label>
+          <label>COOP DOOR<input id="map-coopDoor" list="property-entities"></label>
           <datalist id="property-entities"></datalist>
         </fieldset>
         <div class="dialog-actions">
@@ -178,7 +169,6 @@
         </div>
       </form>
     </dialog>
-
     <script src="config.local.js"></script>
     <script type="module" src="app.js"></script>
   </body>
