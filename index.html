@@ -58,7 +58,11 @@
           <article class="panel overview-panel">
             <div class="panel-heading"><span>SYSTEM OVERVIEW</span><span id="friday-mode">STANDBY</span></div>
             <div class="overview-body">
-              <div class="circuit circuit-left" aria-hidden="true"></div>
+              <div class="reactor-wing reactor-wing-left">
+                <span>READINESS</span>
+                <strong id="priority-health">SYNCING</strong>
+                <small id="priority-health-detail">WHOOP telemetry</small>
+              </div>
               <div class="reactor-cluster" aria-hidden="true">
                 <span class="reactor-orbit orbit-a"></span>
                 <span class="reactor-orbit orbit-b"></span>
@@ -70,7 +74,11 @@
                 </div>
                 <strong id="friday-status">AWAITING SYSTEM LINK</strong>
               </div>
-              <div class="circuit circuit-right" aria-hidden="true"></div>
+              <div class="reactor-wing reactor-wing-right">
+                <span>HOME PRIORITY</span>
+                <strong id="priority-home">SCANNING</strong>
+                <small id="priority-home-detail">Mapped systems only</small>
+              </div>
             </div>
           </article>
 
@@ -127,23 +135,12 @@
               <button id="oasis-valve" class="system-toggle" type="button" disabled><span>DOG BOWL</span><strong>--</strong></button>
             </div>
           </article>
-          <article class="panel property-panel">
-            <div class="panel-heading"><span>▣ &nbsp; DOORS &amp; ACCESS</span><span>09</span></div>
-            <div class="property-stack">
-              <div class="home-state control-state">
-                <span>GARAGE</span><strong id="garage">NOT CONFIGURED</strong>
-                <small id="garage-detail">No entity linked</small>
-                <button id="garage-action" class="mini-button" type="button" disabled>OPEN</button>
-              </div>
-              <div class="home-state">
-                <span>EXTERIOR</span><strong id="doors">NOT CONFIGURED</strong>
-                <small id="doors-detail">No sensors linked</small>
-              </div>
-              <div class="home-state control-state">
-                <span>CHICKEN COOP</span><strong id="coop">SCANNING</strong>
-                <small id="coop-detail">No entity linked</small>
-                <button id="coop-action" class="mini-button" type="button" disabled>OPEN</button>
-              </div>
+          <article class="panel coop-panel">
+            <div class="panel-heading"><span>▣ &nbsp; CHICKEN COOP</span><span>09</span></div>
+            <div class="home-state control-state">
+              <span>ACCESS DOOR</span><strong id="coop">SCANNING</strong>
+              <small id="coop-detail">No entity linked</small>
+              <button id="coop-action" class="mini-button" type="button" disabled>OPEN</button>
             </div>
           </article>
 
@@ -159,7 +156,7 @@
       </section>
 
       <footer class="hud-frame">
-        <span>FRIDAY OS <b>v1.1</b></span>
+        <span>FRIDAY OS <b>v1.2</b></span>
         <span>COMMAND INTERFACE // HOME ASSISTANT</span>
         <span>SECURE LOCAL LINK</span>
       </footer>
@@ -182,9 +179,6 @@
         </fieldset>
         <fieldset>
           <legend>PROPERTY ENTITY MAPPING</legend>
-          <label>GARAGE COVER<input id="map-garage" list="property-entities"></label>
-          <label>FRONT DOOR SENSOR<input id="map-frontDoor" list="property-entities"></label>
-          <label>BACK DOOR SENSOR<input id="map-backDoor" list="property-entities"></label>
           <label>COOP DOOR<input id="map-coopDoor" list="property-entities"></label>
           <datalist id="property-entities"></datalist>
         </fieldset>
