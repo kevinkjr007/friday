@@ -12,7 +12,7 @@ const saved = {
 if (tokenFromLocalConfig) localStorage.removeItem('friday.haToken');
 const mappingKeys = [
   'recovery', 'sleep', 'hrv', 'rhr', 'strain',
-  'garage', 'frontDoor', 'backDoor', 'coopDoor',
+  'coopDoor',
   'climate', 'outdoorTemp', 'outdoorHumidity', 'rainToday', 'coopTemp',
   'oasisWater', 'oasisFan', 'oasisLights', 'oasisValve'
 ];
@@ -22,9 +22,6 @@ const defaultMappings = {
   hrv: 'sensor.whoop_hrv',
   rhr: 'sensor.whoop_resting_heart_rate',
   strain: 'sensor.whoop_day_strain',
-  garage: '',
-  frontDoor: '',
-  backDoor: '',
   coopDoor: 'binary_sensor.chicken_coop_door_door',
   climate: '@Thermostat',
   outdoorTemp: '',
@@ -100,17 +97,6 @@ function render() {
     ? 'AWAITING BIOMETRICS'
     : recovery >= 67 ? 'READY FOR HIGH OUTPUT' : recovery >= 34 ? 'MODERATE CAPACITY' : 'RECOVERY PRIORITY';
 
-  const garage = mappedEntity('garage');
-  $('garage').textContent = garage ? garage.state.toUpperCase() : 'NOT CONFIGURED';
-  $('garage-detail').textContent = entityLabel(garage);
-  $('garage-action').disabled = !garage;
-  $('garage-action').textContent = isOpen(garage) ? 'CLOSE' : 'OPEN';
-
-  const exterior = ['frontDoor', 'backDoor'].map((key) => entities.get(mappings[key])).filter(Boolean);
-  const openDoors = exterior.filter((entity) => entity.state === 'on');
-  $('doors').textContent = exterior.length ? (openDoors.length ? `${openDoors.length} OPEN` : 'SECURE') : 'NOT CONFIGURED';
-  $('doors-detail').textContent = exterior.length ? `${exterior.length} monitored` : 'No door sensors mapped';
-
   const coopDoor = mappedEntity('coopDoor');
   $('coop').textContent = coopDoor ? coopDoor.state.toUpperCase() : 'NOT CONFIGURED';
   $('coop-detail').textContent = entityLabel(coopDoor);
@@ -147,15 +133,27 @@ function render() {
     button.querySelector('strong').textContent = entity ? entity.state.toUpperCase() : 'NOT MAPPED';
   });
 
-  const unavailable = [...entities.values()].filter((entity) => entity.state === 'unavailable');
-  $('systems').textContent = unavailable.length ? `${unavailable.length} UNAVAILABLE` : 'NOMINAL';
-  $('systems').classList.toggle('warning', unavailable.length > 0);
-  $('entity-count').textContent = `${entities.size} ENTITIES LINKED`;
+  const monitoredKeys = mappingKeys.filter((key) => mappings[key]);
+  const monitored = monitoredKeys.map(mappedEntity).filter(Boolean);
+  const unavailable = monitored.filter((entity) => entity.state === 'unavailable');
+  const missingMappings = monitoredKeys.filter((key) => !mappedEntity(key));
+  const priorityCount = unavailable.length + missingMappings.length;
+  $('systems').textContent = priorityCount ? `${priorityCount} PRIORITY ISSUE${priorityCount === 1 ? '' : 'S'}` : 'NOMINAL';
+  $('systems').classList.toggle('warning', priorityCount > 0);
+  $('entity-count').textContent = `${monitored.length} PRIORITY ENTITIES // ${entities.size} LINKED`;
+  $('priority-home').textContent = priorityCount ? `${priorityCount} NEED ATTENTION` : 'ALL CLEAR';
+  $('priority-home-detail').textContent = priorityCount
+    ? `${unavailable.length} unavailable // ${missingMappings.length} unresolved`
+    : `${monitored.length} mapped systems nominal`;
+  $('priority-health').textContent = recovery === null ? 'SYNCING' : recovery >= 67 ? 'HIGH OUTPUT' : recovery >= 34 ? 'MEASURED DAY' : 'RECOVERY MODE';
+  $('priority-health-detail').textContent = recovery === null
+    ? 'WHOOP telemetry pending'
+    : `Recovery ${Math.round(recovery)}%${sleep === null ? '' : ` // Sleep ${Math.round(sleep)}%`}`;
 
   if (recovery !== null) {
     $('summary').textContent = `Recovery is ${Math.round(recovery)}%. ${
       sleep === null ? 'Sleep data is still synchronizing.' : `Sleep performance registered at ${Math.round(sleep)}%.`
-    } Property systems are ${unavailable.length ? `reporting ${unavailable.length} unavailable entities` : 'nominal'}.`;
+    } Priority home systems are ${priorityCount ? `reporting ${priorityCount} issue${priorityCount === 1 ? '' : 's'}` : 'nominal'}.`;
     $('recommendation').textContent =
       recovery >= 67 ? 'Use the green recovery window for demanding work.'
         : recovery >= 34 ? 'Keep the day measured and protect tonight’s sleep.'
@@ -298,7 +296,6 @@ $('setup-form').addEventListener('submit', () => {
   connectHA(saved.url, saved.token);
 });
 
-$('garage-action').addEventListener('click', () => operateCover('garage'));
 $('coop-action').addEventListener('click', () => operateCover('coopDoor'));
 $('climate-down').addEventListener('click', () => adjustClimate(-1));
 $('climate-up').addEventListener('click', () => adjustClimate(1));
