@@ -210,7 +210,7 @@ async function operateCover(key) {
   const action = isOpen(entity) ? 'close' : 'open';
   if (!window.confirm(`${action.toUpperCase()} ${label}?`)) return;
 
-  const button = key === 'garage' ? $('garage-action') : $('coop-action');
+  const button = $('coop-action');
   button.disabled = true;
   button.textContent = 'SENDING';
   try {
