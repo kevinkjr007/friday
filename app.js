@@ -1,11 +1,15 @@
-import { connectHA, subscribe } from './websocket.js';
+import { callService, connectHA, subscribe } from './websocket.js';
 
 const $ = (id) => document.getElementById(id);
 const entities = new Map();
 const saved = {
-  url: localStorage.getItem('friday.haUrl') || '',
+  url: localStorage.getItem('friday.haUrl') || 'http://homeassistant.local:8123',
   token: localStorage.getItem('friday.haToken') || ''
 };
+const mappingKeys = ['garage', 'frontDoor', 'backDoor', 'coopDoor'];
+const mappings = Object.fromEntries(
+  mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || ''])
+);
 
 const entityAliases = {
   recovery: ['sensor.whoop_recovery_score', 'sensor.recovery_score'],
@@ -41,6 +45,18 @@ function findEntities(pattern, domains = []) {
   });
 }
 
+function mappedEntity(key, fallbackPattern, domains = []) {
+  return entities.get(mappings[key]) || findEntities(fallbackPattern, domains)[0] || null;
+}
+
+function isOpen(entity) {
+  return ['on', 'open', 'opening'].includes(entity?.state);
+}
+
+function entityLabel(entity) {
+  return entity?.attributes?.friendly_name || entity?.entity_id || 'Not mapped';
+}
+
 function setMetric(id, value, digits = 0) {
   $(id).textContent = value === null ? '--' : value.toFixed(digits);
 }
@@ -66,16 +82,26 @@ function render() {
     ? 'AWAITING BIOMETRICS'
     : recovery >= 67 ? 'READY FOR HIGH OUTPUT' : recovery >= 34 ? 'MODERATE CAPACITY' : 'RECOVERY PRIORITY';
 
-  const garage = findEntities(/garage/, ['cover']);
-  $('garage').textContent = garage.length ? garage[0].state.toUpperCase() : 'NOT FOUND';
+  const garage = mappedEntity('garage', /garage/, ['cover']);
+  $('garage').textContent = garage ? garage.state.toUpperCase() : 'NOT FOUND';
+  $('garage-detail').textContent = entityLabel(garage);
+  $('garage-action').disabled = !garage;
+  $('garage-action').textContent = isOpen(garage) ? 'CLOSE' : 'OPEN';
 
-  const exterior = findEntities(/(front|back|side|exterior).*(door)|door.*(front|back|side|exterior)/, ['binary_sensor']);
+  const mappedDoors = ['frontDoor', 'backDoor'].map((key) => entities.get(mappings[key])).filter(Boolean);
+  const exterior = mappedDoors.length
+    ? mappedDoors
+    : findEntities(/(front|back|side|exterior).*(door)|door.*(front|back|side|exterior)/, ['binary_sensor']);
   const openDoors = exterior.filter((entity) => entity.state === 'on');
   $('doors').textContent = exterior.length ? (openDoors.length ? `${openDoors.length} OPEN` : 'SECURE') : 'NOT FOUND';
+  $('doors-detail').textContent = exterior.length ? `${exterior.length} monitored` : 'No door sensors mapped';
 
   const coop = findEntities(/(chicken|coop)/);
-  const coopDoor = coop.find((entity) => ['cover', 'binary_sensor'].includes(entity.entity_id.split('.')[0]));
+  const coopDoor = mappedEntity('coopDoor', /(chicken|coop)/, ['cover', 'binary_sensor']);
   $('coop').textContent = coopDoor ? coopDoor.state.toUpperCase() : (coop.length ? 'ONLINE' : 'NOT FOUND');
+  $('coop-detail').textContent = entityLabel(coopDoor);
+  $('coop-action').disabled = !coopDoor || !coopDoor.entity_id.startsWith('cover.');
+  $('coop-action').textContent = isOpen(coopDoor) ? 'CLOSE' : 'OPEN';
 
   const unavailable = [...entities.values()].filter((entity) => entity.state === 'unavailable');
   $('systems').textContent = unavailable.length ? `${unavailable.length} UNAVAILABLE` : 'NOMINAL';
@@ -90,6 +116,45 @@ function render() {
       recovery >= 67 ? 'Use the green recovery window for demanding work.'
         : recovery >= 34 ? 'Keep the day measured and protect tonight’s sleep.'
           : 'Reduce load and prioritize recovery today.';
+  }
+}
+
+function populateEntityLists() {
+  const candidates = [...entities.values()]
+    .filter((entity) => ['cover', 'binary_sensor'].includes(entity.entity_id.split('.')[0]))
+    .sort((a, b) => entityLabel(a).localeCompare(entityLabel(b)));
+
+  document.querySelectorAll('datalist.entity-options').forEach((list) => {
+    list.replaceChildren(...candidates.map((entity) => {
+      const option = document.createElement('option');
+      option.value = entity.entity_id;
+      option.label = entityLabel(entity);
+      return option;
+    }));
+  });
+}
+
+async function operateCover(key) {
+  const entity = entities.get(mappings[key]) || (
+    key === 'garage'
+      ? mappedEntity('garage', /garage/, ['cover'])
+      : mappedEntity('coopDoor', /(chicken|coop)/, ['cover'])
+  );
+  if (!entity?.entity_id.startsWith('cover.')) return;
+
+  const label = entityLabel(entity);
+  const action = isOpen(entity) ? 'close' : 'open';
+  if (!window.confirm(`${action.toUpperCase()} ${label}?`)) return;
+
+  const button = key === 'garage' ? $('garage-action') : $('coop-action');
+  button.disabled = true;
+  button.textContent = 'SENDING';
+  try {
+    await callService('cover', `${action}_cover`, {}, { entity_id: entity.entity_id });
+  } catch (error) {
+    window.alert(error.message);
+  } finally {
+    render();
   }
 }
 
@@ -110,6 +175,7 @@ subscribe((event) => {
   if (event.type === 'status') setStatus(event.status);
   if (event.type === 'states') {
     event.states.forEach((state) => entities.set(state.entity_id, state));
+    populateEntityLists();
     render();
   }
   if (event.type === 'state' && event.state) {
@@ -121,6 +187,7 @@ subscribe((event) => {
 $('configure').addEventListener('click', () => {
   $('ha-url').value = saved.url;
   $('ha-token').value = saved.token;
+  mappingKeys.forEach((key) => { $(`map-${key}`).value = mappings[key]; });
   $('setup').showModal();
 });
 
@@ -131,8 +198,15 @@ $('setup-form').addEventListener('submit', () => {
   saved.token = $('ha-token').value.trim();
   localStorage.setItem('friday.haUrl', saved.url);
   localStorage.setItem('friday.haToken', saved.token);
+  mappingKeys.forEach((key) => {
+    mappings[key] = $(`map-${key}`).value.trim();
+    localStorage.setItem(`friday.entity.${key}`, mappings[key]);
+  });
   connectHA(saved.url, saved.token);
 });
+
+$('garage-action').addEventListener('click', () => operateCover('garage'));
+$('coop-action').addEventListener('click', () => operateCover('coopDoor'));
 
 tick();
 setInterval(tick, 1000);
