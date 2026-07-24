@@ -14,8 +14,19 @@ const mappingKeys = [
   'recovery', 'sleep', 'hrv', 'rhr', 'strain',
   'garage', 'frontDoor', 'backDoor', 'coopDoor'
 ];
+const defaultMappings = {
+  recovery: 'sensor.whoop_recovery_score',
+  sleep: 'sensor.whoop_sleep_performance',
+  hrv: 'sensor.whoop_hrv',
+  rhr: 'sensor.whoop_resting_heart_rate',
+  strain: 'sensor.whoop_day_strain',
+  garage: '',
+  frontDoor: '',
+  backDoor: '',
+  coopDoor: 'binary_sensor.chicken_coop_door_door'
+};
 const mappings = Object.fromEntries(
-  mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || ''])
+  mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || defaultMappings[key] || ''])
 );
 
 function tick() {
