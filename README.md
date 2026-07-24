@@ -1,4 +1,4 @@
-# FRIDAY OS v0.7
+# FRIDAY OS v0.8
 
 A responsive JARVIS-inspired command dashboard for Home Assistant.
 
@@ -10,6 +10,10 @@ A responsive JARVIS-inspired command dashboard for Home Assistant.
 - Explicitly mapped WHOOP recovery, sleep, HRV, resting heart rate, and strain
 - Garage, exterior door, chicken coop, and unavailable-device status
 - Responsive desktop, tablet, and mobile HUD
+- Original holographic FRIDAY portrait as the visual command presence
+- Animated arc-reactor core tied to Home Assistant connection state
+- Subtle cursor-responsive portrait parallax on desktop
+- Reduced-motion support through the browser's motion preference
 - Recovery-aware daily recommendation
 - Browser-based entity mapping for WHOOP, garage, exterior doors, and coop
 - Your known WHOOP sensors and chicken-coop door sensor are preconfigured by entity ID
@@ -54,4 +58,4 @@ After the first successful connection, select only the entities that exist in yo
 
 ## Version
 
-v0.7 — Kevin's known Home Assistant entities preconfigured
+v0.8 — holographic FRIDAY presence and animated connection-state reactor

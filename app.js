@@ -166,6 +166,24 @@ function setStatus(status) {
   };
   $('connection-status').textContent = labels[status] || status.toUpperCase();
   $('status-dot').className = `dot ${status}`;
+  const presence = $('friday-presence');
+  if (presence) presence.dataset.state = status;
+  const modeLabels = {
+    connecting: 'SEARCHING',
+    connected: 'ONLINE',
+    disconnected: 'STANDBY',
+    error: 'LINK ERROR',
+    'auth-invalid': 'AUTH LOCK'
+  };
+  const presenceLabels = {
+    connecting: 'ESTABLISHING HOME ASSISTANT LINK',
+    connected: 'FRIDAY IS ONLINE',
+    disconnected: 'AWAITING SYSTEM LINK',
+    error: 'SYSTEM LINK INTERRUPTED',
+    'auth-invalid': 'AUTHENTICATION REQUIRED'
+  };
+  if ($('friday-mode')) $('friday-mode').textContent = modeLabels[status] || status.toUpperCase();
+  if ($('friday-status')) $('friday-status').textContent = presenceLabels[status] || labels[status] || status.toUpperCase();
   if (status === 'auth-invalid') $('setup').showModal();
 }
 
@@ -215,6 +233,22 @@ $('setup-form').addEventListener('submit', () => {
 $('garage-action').addEventListener('click', () => operateCover('garage'));
 $('coop-action').addEventListener('click', () => operateCover('coopDoor'));
 
+const portraitStage = document.querySelector('.portrait-stage');
+if (portraitStage && window.matchMedia('(pointer:fine)').matches) {
+  portraitStage.addEventListener('pointermove', (event) => {
+    const box = portraitStage.getBoundingClientRect();
+    const x = ((event.clientX - box.left) / box.width - .5) * 8;
+    const y = ((event.clientY - box.top) / box.height - .5) * 6;
+    portraitStage.style.setProperty('--look-x', `${x.toFixed(1)}px`);
+    portraitStage.style.setProperty('--look-y', `${y.toFixed(1)}px`);
+  });
+  portraitStage.addEventListener('pointerleave', () => {
+    portraitStage.style.setProperty('--look-x', '0px');
+    portraitStage.style.setProperty('--look-y', '0px');
+  });
+}
+
 tick();
+setStatus('disconnected');
 setInterval(tick, 1000);
 if (saved.url && saved.token) connectHA(saved.url, saved.token);
