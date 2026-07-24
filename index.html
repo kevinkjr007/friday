@@ -92,7 +92,7 @@
       </section>
 
       <footer>
-        <span>FRIDAY OS <b>v0.4</b></span>
+        <span>FRIDAY OS <b>v0.5</b></span>
         <span id="entity-count">0 ENTITIES LINKED</span>
       </footer>
     </main>
@@ -107,8 +107,27 @@
         <label>LONG-LIVED ACCESS TOKEN
           <textarea id="ha-token" rows="4" required></textarea>
         </label>
-        <fieldset>
-          <legend>PROPERTY ENTITY MAPPING</legend>
+          <fieldset>
+            <legend>WHOOP SENSOR MAPPING</legend>
+            <label>RECOVERY
+              <input id="map-recovery" list="sensor-entities" placeholder="Select your recovery sensor">
+            </label>
+            <label>SLEEP PERFORMANCE
+              <input id="map-sleep" list="sensor-entities" placeholder="Select your sleep sensor">
+            </label>
+            <label>HRV
+              <input id="map-hrv" list="sensor-entities" placeholder="Select your HRV sensor">
+            </label>
+            <label>RESTING HEART RATE
+              <input id="map-rhr" list="sensor-entities" placeholder="Select your resting HR sensor">
+            </label>
+            <label>DAY STRAIN
+              <input id="map-strain" list="sensor-entities" placeholder="Select your strain sensor">
+            </label>
+            <datalist id="sensor-entities"></datalist>
+          </fieldset>
+          <fieldset>
+            <legend>PROPERTY ENTITY MAPPING</legend>
           <label>GARAGE COVER
             <input id="map-garage" list="property-entities" placeholder="cover.garage_door">
           </label>
@@ -121,7 +140,7 @@
           <label>COOP DOOR
             <input id="map-coopDoor" list="property-entities" placeholder="cover.chicken_coop_door">
           </label>
-          <datalist id="property-entities" class="entity-options"></datalist>
+          <datalist id="property-entities"></datalist>
         </fieldset>
         <div class="dialog-actions">
           <button id="cancel" class="text-button" type="button">CANCEL</button>
