@@ -92,7 +92,7 @@
       </section>
 
       <footer>
-        <span>FRIDAY OS <b>v0.5</b></span>
+        <span>FRIDAY OS <b>v0.6</b></span>
         <span id="entity-count">0 ENTITIES LINKED</span>
       </footer>
     </main>
@@ -105,7 +105,7 @@
           <input id="ha-url" type="url" placeholder="http://homeassistant.local:8123" required>
         </label>
         <label>LONG-LIVED ACCESS TOKEN
-          <textarea id="ha-token" rows="4" required></textarea>
+          <textarea id="ha-token" rows="4" placeholder="Paste a token, or load it from config.local.js"></textarea>
         </label>
           <fieldset>
             <legend>WHOOP SENSOR MAPPING</legend>
@@ -149,6 +149,7 @@
       </form>
     </dialog>
 
+    <script src="config.local.js"></script>
     <script type="module" src="app.js"></script>
   </body>
 </html>
