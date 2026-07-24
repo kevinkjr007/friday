@@ -1,4 +1,4 @@
-# FRIDAY OS v0.8
+# FRIDAY OS v0.9
 
 A responsive JARVIS-inspired command dashboard for Home Assistant.
 
@@ -58,4 +58,4 @@ After the first successful connection, select only the entities that exist in yo
 
 ## Version
 
-v0.8 — holographic FRIDAY presence and animated connection-state reactor
+v0.9 — open command-stage layout with a freestanding FRIDAY presence and floating reactor core
