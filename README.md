@@ -1,4 +1,4 @@
-# FRIDAY OS v0.4
+# FRIDAY OS v0.5
 
 A responsive JARVIS-inspired command dashboard for Home Assistant.
 
@@ -7,11 +7,12 @@ A responsive JARVIS-inspired command dashboard for Home Assistant.
 - Live Home Assistant WebSocket connection with automatic reconnect
 - Browser-local credential storage
 - Live entity state store
-- WHOOP recovery, sleep, HRV, resting heart rate, and strain
+- Explicitly mapped WHOOP recovery, sleep, HRV, resting heart rate, and strain
 - Garage, exterior door, chicken coop, and unavailable-device status
 - Responsive desktop, tablet, and mobile HUD
 - Recovery-aware daily recommendation
-- Browser-based entity mapping for garage, exterior doors, and coop
+- Browser-based entity mapping for WHOOP, garage, exterior doors, and coop
+- No automatic entity guessing; unmapped capabilities remain unconfigured
 - Confirmed garage and coop cover controls
 - Default link address set to `http://homeassistant.local:8123`
 
@@ -34,18 +35,12 @@ Create the token in your Home Assistant profile under **Security**.
 
 The token is saved only in that browser's local storage.
 
-## Expected WHOOP entities
+## Entity mapping
 
-FRIDAY automatically checks these entity IDs:
-
-- `sensor.whoop_recovery_score`
-- `sensor.whoop_sleep_performance`
-- `sensor.whoop_hrv`
-- `sensor.whoop_resting_hr`
-- `sensor.whoop_day_strain`
-
-Fallback entity IDs without the `whoop_` prefix are also supported. Property entities can be selected under **Configure Link** after the first successful connection.
+After the first successful connection, select only the entities that exist in your
+Home Assistant instance under **Configure Link**. FRIDAY never guesses entities by
+name. Blank mappings remain visibly unconfigured and do not control anything.
 
 ## Version
 
-v0.4 — entity mapping and property controls
+v0.5 — explicit entity mapping with no generic fallbacks
