@@ -84,9 +84,9 @@
             <div class="portrait-stage" aria-label="FRIDAY holographic interface">
               <div class="portrait-orbit portrait-orbit-one"></div>
               <div class="portrait-orbit portrait-orbit-two"></div>
-              <img class="friday-portrait" src="assets/friday-hologram-v1.webp" alt="FRIDAY holographic AI">
+              <img class="friday-portrait" src="assets/friday-hologram-v1.webp" alt="FRIDAY holographic intelligence">
               <div class="holo-sweep" aria-hidden="true"></div>
-              <div class="portrait-title"><strong>F.R.I.D.A.Y.</strong><span>AI ASSISTANT</span></div>
+              <div class="portrait-title"><strong>F.R.I.D.A.Y.</strong><span>HOME INTELLIGENCE</span></div>
               <div class="holo-base" aria-hidden="true"><i></i><i></i><i></i></div>
             </div>
 
@@ -102,8 +102,33 @@
         </section>
 
         <aside class="right-rail">
+          <article class="panel environment-panel">
+            <div class="panel-heading"><span>◇ &nbsp; CLIMATE &amp; WEATHER</span><span>07</span></div>
+            <div class="climate-primary">
+              <div><span>THERMOSTAT</span><strong id="climate-current">--°</strong><small id="climate-mode">NOT CONFIGURED</small></div>
+              <div class="setpoint"><span>SETPOINT</span><strong id="climate-target">--°</strong>
+                <div><button id="climate-down" class="mini-button inline" type="button" disabled>−</button><button id="climate-up" class="mini-button inline" type="button" disabled>+</button></div>
+              </div>
+            </div>
+            <div class="environment-grid">
+              <div><span>OUTDOOR</span><strong id="outdoor-temp">--°</strong></div>
+              <div><span>HUMIDITY</span><strong id="outdoor-humidity">--%</strong></div>
+              <div><span>RAIN</span><strong id="rain-today">--</strong></div>
+              <div><span>COOP</span><strong id="coop-temp">--°</strong></div>
+            </div>
+          </article>
+
+          <article class="panel oasis-panel">
+            <div class="panel-heading"><span>⌁ &nbsp; OASIS CONTROL</span><span>08</span></div>
+            <div class="oasis-grid">
+              <button id="oasis-water" class="system-toggle" type="button" disabled><span>WATER FEATURE</span><strong>--</strong></button>
+              <button id="oasis-fan" class="system-toggle" type="button" disabled><span>PORCH FAN</span><strong>--</strong></button>
+              <button id="oasis-lights" class="system-toggle" type="button" disabled><span>PORCH LIGHTS</span><strong>--</strong></button>
+              <button id="oasis-valve" class="system-toggle" type="button" disabled><span>DOG BOWL</span><strong>--</strong></button>
+            </div>
+          </article>
           <article class="panel property-panel">
-            <div class="panel-heading"><span>▣ &nbsp; DOORS &amp; ACCESS</span><span>07</span></div>
+            <div class="panel-heading"><span>▣ &nbsp; DOORS &amp; ACCESS</span><span>09</span></div>
             <div class="property-stack">
               <div class="home-state control-state">
                 <span>GARAGE</span><strong id="garage">NOT CONFIGURED</strong>
@@ -123,7 +148,7 @@
           </article>
 
           <article class="panel telemetry-panel">
-            <div class="panel-heading"><span>⌬ &nbsp; HOME ASSISTANT</span><span>08</span></div>
+            <div class="panel-heading"><span>⌬ &nbsp; HOME ASSISTANT</span><span>10</span></div>
             <div class="telemetry-core">
               <span id="status-dot" class="dot"></span>
               <strong>CORE LINK</strong>
@@ -134,7 +159,7 @@
       </section>
 
       <footer class="hud-frame">
-        <span>FRIDAY OS <b>v1.0</b></span>
+        <span>FRIDAY OS <b>v1.1</b></span>
         <span>COMMAND INTERFACE // HOME ASSISTANT</span>
         <span>SECURE LOCAL LINK</span>
       </footer>
@@ -162,6 +187,19 @@
           <label>BACK DOOR SENSOR<input id="map-backDoor" list="property-entities"></label>
           <label>COOP DOOR<input id="map-coopDoor" list="property-entities"></label>
           <datalist id="property-entities"></datalist>
+        </fieldset>
+        <fieldset>
+          <legend>CLIMATE, WEATHER &amp; OASIS MAPPING</legend>
+          <label>THERMOSTAT<input id="map-climate" list="all-entities"></label>
+          <label>OUTDOOR TEMPERATURE<input id="map-outdoorTemp" list="sensor-entities"></label>
+          <label>OUTDOOR HUMIDITY<input id="map-outdoorHumidity" list="sensor-entities"></label>
+          <label>RAIN TODAY<input id="map-rainToday" list="sensor-entities"></label>
+          <label>COOP TEMPERATURE<input id="map-coopTemp" list="sensor-entities"></label>
+          <label>WATER FEATURE<input id="map-oasisWater" list="all-entities"></label>
+          <label>PORCH FAN<input id="map-oasisFan" list="all-entities"></label>
+          <label>PORCH LIGHTS<input id="map-oasisLights" list="all-entities"></label>
+          <label>DOG-BOWL VALVE<input id="map-oasisValve" list="all-entities"></label>
+          <datalist id="all-entities"></datalist>
         </fieldset>
         <div class="dialog-actions">
           <button id="cancel" class="text-button" type="button">CANCEL</button>
