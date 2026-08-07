@@ -27,3 +27,8 @@ dialog{width:min(560px,calc(100% - 30px));color:var(--text);background:#06121c;b
 
 /* v1.3 portrait framing: preserve the full face while keeping the hologram integrated */
 @media(min-width:901px){.portrait-stage::before{content:"";position:absolute;z-index:0;inset:7% 2% 4%;background:radial-gradient(ellipse at 50% 58%,rgba(27,184,255,.13),transparent 64%);filter:blur(10px);pointer-events:none}.portrait-title{top:10px}.holo-base{bottom:9px}}
+
+/* v1.4: dissolve the source image canvas into the command stage */
+.portrait-stage{mask-image:radial-gradient(ellipse 63% 96% at 50% 50%,#000 68%,transparent 100%),linear-gradient(to bottom,#000 0 88%,transparent 99%)}
+.friday-portrait{mix-blend-mode:screen;filter:saturate(.94) contrast(1.16) brightness(.92) drop-shadow(0 0 18px rgba(25,207,255,.4))}
+.portrait-stage::after{content:"";position:absolute;z-index:4;inset:0;pointer-events:none;background:radial-gradient(ellipse 44% 70% at 50% 48%,transparent 62%,rgba(2,8,13,.3) 84%,rgba(2,8,13,.82) 100%);mix-blend-mode:multiply}
