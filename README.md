@@ -1,14 +1,14 @@
-# FRIDAY OS v1.3
+# FRIDAY OS v1.4
 
 A responsive JARVIS-inspired Home Assistant command center based on the original FRIDAY concept design.
 
-## v1.3 portrait and environmental telemetry
+## v1.4 priority and presentation fixes
 
-- Reframes FRIDAY to preserve her full face within the center holographic stage
-- Fixes numeric sensor lookup when mappings use Home Assistant friendly names
-- Adds confirmed defaults for Front yard temperature and humidity
-- Adds the confirmed Chicken Coop temperature default
-- Leaves rainfall explicitly unmapped until a real rain entity is exposed or selected
+- Translates the chicken-coop binary sensor into clear Open/Closed language
+- Maps rainfall to the confirmed `Daily rain` Home Assistant entity
+- Dissolves FRIDAY's portrait backdrop into the command stage
+- Replaces the generic System Advisory with an actionable Priority Brief
+- Shows WHOOP telemetry freshness and warns when data is over 90 minutes old
 
 ## Install
 
@@ -37,4 +37,4 @@ Use **Configure Link** to select only entities that exist in your Home Assistant
 
 ## Version
 
-v1.3 — improved FRIDAY framing and corrected environmental telemetry
+v1.4 — clearer status language, rain mapping, portrait integration, and data freshness
