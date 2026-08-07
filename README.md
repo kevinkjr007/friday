@@ -1,14 +1,14 @@
-# FRIDAY OS v1.4
+# FRIDAY OS v1.5
 
 A responsive JARVIS-inspired Home Assistant command center based on the original FRIDAY concept design.
 
-## v1.4 priority and presentation fixes
+## v1.5 presence and control upgrade
 
-- Translates the chicken-coop binary sensor into clear Open/Closed language
-- Maps rainfall to the confirmed `Daily rain` Home Assistant entity
-- Dissolves FRIDAY's portrait backdrop into the command stage
-- Replaces the generic System Advisory with an actionable Priority Brief
-- Shows WHOOP telemetry freshness and warns when data is over 90 minutes old
+- Replaces the boxed portrait with a true transparent-background FRIDAY figure
+- Adds thermostat HVAC-mode and fan-mode controls when supported
+- Adds live controls for the confirmed Couch Table Lamp and Modern Lamp entities
+- Adds a one-tap Living Room All Off command
+- Keeps Oasis, weather, WHOOP freshness, and coop access controls intact
 
 ## Install
 
@@ -37,4 +37,4 @@ Use **Configure Link** to select only entities that exist in your Home Assistant
 
 ## Version
 
-v1.4 — clearer status language, rain mapping, portrait integration, and data freshness
+v1.5 — transparent FRIDAY presence, expanded climate control, and real quick actions

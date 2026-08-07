@@ -92,7 +92,7 @@
             <div class="portrait-stage" aria-label="FRIDAY holographic interface">
               <div class="portrait-orbit portrait-orbit-one"></div>
               <div class="portrait-orbit portrait-orbit-two"></div>
-              <img class="friday-portrait" src="assets/friday-hologram-v1.webp" alt="FRIDAY holographic intelligence">
+              <img class="friday-portrait" src="assets/friday-hologram-v3.png" alt="FRIDAY holographic intelligence">
               <div class="holo-sweep" aria-hidden="true"></div>
               <div class="portrait-title"><strong>F.R.I.D.A.Y.</strong><span>HOME INTELLIGENCE</span></div>
               <div class="holo-base" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -118,6 +118,10 @@
                 <div><button id="climate-down" class="mini-button inline" type="button" disabled>−</button><button id="climate-up" class="mini-button inline" type="button" disabled>+</button></div>
               </div>
             </div>
+            <div class="climate-actions">
+              <button id="climate-mode-action" class="mode-button" type="button" disabled><span>HVAC MODE</span><strong>--</strong></button>
+              <button id="climate-fan-action" class="mode-button" type="button" disabled><span>FAN MODE</span><strong>--</strong></button>
+            </div>
             <div class="environment-grid">
               <div><span>OUTDOOR</span><strong id="outdoor-temp">--°</strong></div>
               <div><span>HUMIDITY</span><strong id="outdoor-humidity">--%</strong></div>
@@ -135,8 +139,16 @@
               <button id="oasis-valve" class="system-toggle" type="button" disabled><span>DOG BOWL</span><strong>--</strong></button>
             </div>
           </article>
+          <article class="panel quick-panel">
+            <div class="panel-heading"><span>✦ &nbsp; QUICK CONTROLS</span><span>09</span></div>
+            <div class="quick-grid">
+              <button id="quick-couch-lamp" class="system-toggle" type="button" disabled><span>COUCH TABLE LAMP</span><strong>--</strong></button>
+              <button id="quick-modern-lamp" class="system-toggle" type="button" disabled><span>MODERN LAMP</span><strong>--</strong></button>
+              <button id="quick-all-off" class="system-toggle command" type="button" disabled><span>LIVING ROOM</span><strong>ALL OFF</strong></button>
+            </div>
+          </article>
           <article class="panel coop-panel">
-            <div class="panel-heading"><span>▣ &nbsp; CHICKEN COOP</span><span>09</span></div>
+            <div class="panel-heading"><span>▣ &nbsp; CHICKEN COOP</span><span>10</span></div>
             <div class="home-state control-state">
               <span>ACCESS DOOR</span><strong id="coop">SCANNING</strong>
               <small id="coop-detail">No entity linked</small>
@@ -145,7 +157,7 @@
           </article>
 
           <article class="panel telemetry-panel">
-            <div class="panel-heading"><span>⌬ &nbsp; HOME ASSISTANT</span><span>10</span></div>
+            <div class="panel-heading"><span>⌬ &nbsp; HOME ASSISTANT</span><span>11</span></div>
             <div class="telemetry-core">
               <span id="status-dot" class="dot"></span>
               <strong>CORE LINK</strong>
@@ -156,7 +168,7 @@
       </section>
 
       <footer class="hud-frame">
-        <span>FRIDAY OS <b>v1.4</b></span>
+        <span>FRIDAY OS <b>v1.5</b></span>
         <span>COMMAND INTERFACE // HOME ASSISTANT</span>
         <span>SECURE LOCAL LINK</span>
       </footer>
@@ -193,6 +205,8 @@
           <label>PORCH FAN<input id="map-oasisFan" list="all-entities"></label>
           <label>PORCH LIGHTS<input id="map-oasisLights" list="all-entities"></label>
           <label>DOG-BOWL VALVE<input id="map-oasisValve" list="all-entities"></label>
+          <label>COUCH TABLE LAMP<input id="map-couchLamp" list="all-entities"></label>
+          <label>MODERN LAMP<input id="map-modernLamp" list="all-entities"></label>
           <datalist id="all-entities"></datalist>
         </fieldset>
         <div class="dialog-actions">

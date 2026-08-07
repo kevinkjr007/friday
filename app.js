@@ -14,7 +14,8 @@ const mappingKeys = [
   'recovery', 'sleep', 'hrv', 'rhr', 'strain',
   'coopDoor',
   'climate', 'outdoorTemp', 'outdoorHumidity', 'rainToday', 'coopTemp',
-  'oasisWater', 'oasisFan', 'oasisLights', 'oasisValve'
+  'oasisWater', 'oasisFan', 'oasisLights', 'oasisValve',
+  'couchLamp', 'modernLamp'
 ];
 const defaultMappings = {
   recovery: 'sensor.whoop_recovery_score',
@@ -31,7 +32,9 @@ const defaultMappings = {
   oasisWater: '@Water Feature',
   oasisFan: '@TP-LINK_Smart Plug_E7BD Big Ass Fan',
   oasisLights: '@TP-LINK_Smart Plug_E7BD Back Porch Lights',
-  oasisValve: '@Oasis'
+  oasisValve: '@Oasis',
+  couchLamp: 'light.couch_table_lamp',
+  modernLamp: 'light.modern_lamp'
 };
 const mappings = Object.fromEntries(
   mappingKeys.map((key) => [key, localStorage.getItem(`friday.entity.${key}`) || defaultMappings[key] || ''])
@@ -131,6 +134,14 @@ function render() {
   $('climate-mode').textContent = climate ? climate.state.toUpperCase() : 'NOT CONFIGURED';
   $('climate-down').disabled = !climate || !Number.isFinite(targetTemp);
   $('climate-up').disabled = !climate || !Number.isFinite(targetTemp);
+  const hvacModes = Array.isArray(climate?.attributes?.hvac_modes) ? climate.attributes.hvac_modes : [];
+  const fanModes = Array.isArray(climate?.attributes?.fan_modes) ? climate.attributes.fan_modes : [];
+  const modeButton = $('climate-mode-action');
+  const fanButton = $('climate-fan-action');
+  modeButton.disabled = !climate || hvacModes.length < 2;
+  fanButton.disabled = !climate || fanModes.length < 2;
+  modeButton.querySelector('strong').textContent = climate ? climate.state.toUpperCase() : '--';
+  fanButton.querySelector('strong').textContent = climate?.attributes?.fan_mode?.toUpperCase() || 'AUTO';
 
   const renderEnvironment = (id, key, suffix = '') => {
     const value = numberState(key);
@@ -152,6 +163,18 @@ function render() {
     button.classList.toggle('active', entity?.state === 'on' || entity?.state === 'open');
     button.querySelector('strong').textContent = entity ? entity.state.toUpperCase() : 'NOT MAPPED';
   });
+
+  const quickControls = [
+    ['quick-couch-lamp', 'couchLamp'], ['quick-modern-lamp', 'modernLamp']
+  ];
+  quickControls.forEach(([id, key]) => {
+    const entity = mappedEntity(key);
+    const button = $(id);
+    button.disabled = !entity || entity.state === 'unavailable';
+    button.classList.toggle('active', entity?.state === 'on');
+    button.querySelector('strong').textContent = entity ? entity.state.toUpperCase() : 'NOT MAPPED';
+  });
+  $('quick-all-off').disabled = !quickControls.some(([, key]) => Boolean(mappedEntity(key)));
 
   const monitoredKeys = mappingKeys.filter((key) => mappings[key]);
   const monitored = monitoredKeys.map(mappedEntity).filter(Boolean);
@@ -213,6 +236,15 @@ async function adjustClimate(delta) {
   const target = Number.parseFloat(climate?.attributes?.temperature);
   if (!climate || !Number.isFinite(target)) return;
   await callService('climate', 'set_temperature', { temperature: target + delta }, { entity_id: climate.entity_id });
+}
+
+async function cycleClimateAttribute(attribute, service, dataKey) {
+  const climate = mappedEntity('climate');
+  const values = climate?.attributes?.[`${attribute}s`] || [];
+  const current = attribute === 'hvac_mode' ? climate?.state : climate?.attributes?.[attribute];
+  if (!climate || values.length < 2) return;
+  const next = values[(Math.max(0, values.indexOf(current)) + 1) % values.length];
+  await callService('climate', service, { [dataKey]: next }, { entity_id: climate.entity_id });
 }
 
 async function toggleMappedEntity(key) {
@@ -325,10 +357,19 @@ $('setup-form').addEventListener('submit', () => {
 $('coop-action').addEventListener('click', () => operateCover('coopDoor'));
 $('climate-down').addEventListener('click', () => adjustClimate(-1));
 $('climate-up').addEventListener('click', () => adjustClimate(1));
+$('climate-mode-action').addEventListener('click', () => cycleClimateAttribute('hvac_mode', 'set_hvac_mode', 'hvac_mode'));
+$('climate-fan-action').addEventListener('click', () => cycleClimateAttribute('fan_mode', 'set_fan_mode', 'fan_mode'));
 [
   ['oasis-water', 'oasisWater'], ['oasis-fan', 'oasisFan'],
   ['oasis-lights', 'oasisLights'], ['oasis-valve', 'oasisValve']
 ].forEach(([id, key]) => $(id).addEventListener('click', () => toggleMappedEntity(key)));
+[
+  ['quick-couch-lamp', 'couchLamp'], ['quick-modern-lamp', 'modernLamp']
+].forEach(([id, key]) => $(id).addEventListener('click', () => toggleMappedEntity(key)));
+$('quick-all-off').addEventListener('click', async () => {
+  const lights = ['couchLamp', 'modernLamp'].map(mappedEntity).filter(Boolean);
+  await Promise.all(lights.map((entity) => callService(entity.entity_id.split('.')[0], 'turn_off', {}, { entity_id: entity.entity_id })));
+});
 
 const portraitStage = document.querySelector('.portrait-stage');
 if (portraitStage && window.matchMedia('(pointer:fine)').matches) {
