@@ -26,7 +26,7 @@ const defaultMappings = {
   climate: '@Thermostat',
   outdoorTemp: '@Front yard Temperature',
   outdoorHumidity: '@Front yard Humidity',
-  rainToday: '',
+  rainToday: '@Daily rain',
   coopTemp: '@Chicken Coop Temperature Temperature',
   oasisWater: '@Water Feature',
   oasisFan: '@TP-LINK_Smart Plug_E7BD Big Ass Fan',
@@ -68,6 +68,26 @@ function isOpen(entity) {
   return ['on', 'open', 'opening'].includes(entity?.state);
 }
 
+function doorState(entity) {
+  if (!entity) return 'NOT CONFIGURED';
+  if (['on', 'open', 'opening'].includes(entity.state)) return entity.state === 'opening' ? 'OPENING' : 'OPEN';
+  if (['off', 'closed', 'closing'].includes(entity.state)) return entity.state === 'closing' ? 'CLOSING' : 'CLOSED';
+  return entity.state.toUpperCase();
+}
+
+function ageMinutes(entity) {
+  const timestamp = Date.parse(entity?.last_updated || entity?.last_changed || '');
+  return Number.isFinite(timestamp) ? Math.max(0, Math.floor((Date.now() - timestamp) / 60000)) : null;
+}
+
+function formatAge(minutes) {
+  if (minutes === null) return 'freshness unknown';
+  if (minutes < 2) return 'updated just now';
+  if (minutes < 60) return `updated ${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  return `updated ${hours}h ${minutes % 60}m ago`;
+}
+
 function entityLabel(entity) {
   return entity?.attributes?.friendly_name || entity?.entity_id || 'Not mapped';
 }
@@ -98,7 +118,7 @@ function render() {
     : recovery >= 67 ? 'READY FOR HIGH OUTPUT' : recovery >= 34 ? 'MODERATE CAPACITY' : 'RECOVERY PRIORITY';
 
   const coopDoor = mappedEntity('coopDoor');
-  $('coop').textContent = coopDoor ? coopDoor.state.toUpperCase() : 'NOT CONFIGURED';
+  $('coop').textContent = doorState(coopDoor);
   $('coop-detail').textContent = entityLabel(coopDoor);
   $('coop-action').disabled = !coopDoor || !coopDoor.entity_id.startsWith('cover.');
   $('coop-action').textContent = isOpen(coopDoor) ? 'CLOSE' : 'OPEN';
@@ -119,7 +139,6 @@ function render() {
   renderEnvironment('outdoor-temp', 'outdoorTemp', '°');
   renderEnvironment('outdoor-humidity', 'outdoorHumidity', '%');
   renderEnvironment('rain-today', 'rainToday');
-  if (!mappings.rainToday) $('rain-today').textContent = 'MAP SENSOR';
   renderEnvironment('coop-temp', 'coopTemp', '°');
 
   const oasisControls = [
@@ -139,6 +158,10 @@ function render() {
   const unavailable = monitored.filter((entity) => entity.state === 'unavailable');
   const missingMappings = monitoredKeys.filter((key) => !mappedEntity(key));
   const priorityCount = unavailable.length + missingMappings.length;
+  const whoopEntities = ['recovery', 'sleep', 'hrv', 'rhr', 'strain'].map(mappedEntity).filter(Boolean);
+  const whoopAges = whoopEntities.map(ageMinutes).filter(Number.isFinite);
+  const whoopAge = whoopAges.length ? Math.max(...whoopAges) : null;
+  const whoopStale = whoopAge !== null && whoopAge > 90;
   $('systems').textContent = priorityCount ? `${priorityCount} PRIORITY ISSUE${priorityCount === 1 ? '' : 'S'}` : 'NOMINAL';
   $('systems').classList.toggle('warning', priorityCount > 0);
   $('entity-count').textContent = `${monitored.length} PRIORITY ENTITIES // ${entities.size} LINKED`;
@@ -149,16 +172,18 @@ function render() {
   $('priority-health').textContent = recovery === null ? 'SYNCING' : recovery >= 67 ? 'HIGH OUTPUT' : recovery >= 34 ? 'MEASURED DAY' : 'RECOVERY MODE';
   $('priority-health-detail').textContent = recovery === null
     ? 'WHOOP telemetry pending'
-    : `Recovery ${Math.round(recovery)}%${sleep === null ? '' : ` // Sleep ${Math.round(sleep)}%`}`;
+    : `Recovery ${Math.round(recovery)}% // ${formatAge(whoopAge)}`;
+
+  $('recommendation').textContent = priorityCount
+    ? `${priorityCount} mapped home system${priorityCount === 1 ? '' : 's'} need attention.`
+    : whoopStale
+      ? `WHOOP data is stale — last ${formatAge(whoopAge)}.`
+      : 'No priority issues detected. Home systems are nominal.';
 
   if (recovery !== null) {
     $('summary').textContent = `Recovery is ${Math.round(recovery)}%. ${
       sleep === null ? 'Sleep data is still synchronizing.' : `Sleep performance registered at ${Math.round(sleep)}%.`
     } Priority home systems are ${priorityCount ? `reporting ${priorityCount} issue${priorityCount === 1 ? '' : 's'}` : 'nominal'}.`;
-    $('recommendation').textContent =
-      recovery >= 67 ? 'Use the green recovery window for demanding work.'
-        : recovery >= 34 ? 'Keep the day measured and protect tonight’s sleep.'
-          : 'Reduce load and prioritize recovery today.';
   }
 }
 
